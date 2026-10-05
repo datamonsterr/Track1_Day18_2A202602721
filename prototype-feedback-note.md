@@ -3,60 +3,58 @@
 - **Người điều phối (Facilitator):** Phạm Thành Đạt (MHV: 2A202602721)
 - **Người tham gia thử nghiệm (Tester ngoài nhóm):** Nguyễn Hoàng Nam (26 tuổi — Backend Engineer đang học chuyển tiếp AI/ML, không thuộc nhóm làm dự án)
 - **Thời gian & Hình thức:** 10:15 - 10:45 AM, Phiên trực tiếp kết hợp quan sát màn hình tương tác.
-- **Kịch bản thực hiện:** Tester thực hiện toàn bộ quy trình trên bài tập Rate Limiter mà không có sự giải thích hay can thiệp trước từ Facilitator (Gate 4 compliance).
+- **Kịch bản thực hiện:** Tester thực hiện toàn bộ quy trình trên bài tập LangChain RAG Indexing (Embedding Dimension & Cosine Similarity) mà không có sự giải thích hay can thiệp trước từ Facilitator (Gate 4 compliance).
 
 ---
 
 ## 1. Nhật ký Quan sát chi tiết theo từng Phương án
 
-### Option A: Diagnostic Quiz (AI chủ động dẫn dắt qua 2 câu trắc nghiệm)
+### Option A: Diagnostic Refresher (AI-Led mini-quiz 2 câu)
 - **Hành vi quan sát được:**
-  - Sau khi bấm "Tôi vẫn chưa hiểu", tester đọc ngay phần *Bằng chứng hệ thống* và gật đầu: *"À, nó bảo dựa trên lần chạy 100 requests bị trần"*.
-  - Tester mất khoảng 25 giây để đọc và chọn đáp án cho Câu 1. Đến Câu 2, tester đọc nhanh hơn và chọn ngay phương án A.
-  - Sau khi bấm "Nộp câu trả lời", thẻ ôn tập 60s hiện ra. Tester dừng lại đọc rất kỹ đoạn code so sánh giữa cách làm sai và cách sửa đúng.
+  - Sau khi bấm "Tôi vẫn chưa hiểu", tester đọc ngay dòng kỳ vọng: *"AI sẽ đặt 2 câu hỏi trắc nghiệm nhanh để tìm lỗ hổng trong 60s"*.
+  - Tester mất khoảng 20 giây để chọn đáp án Câu 1 (chọn phương án B: số lượng tọa độ toán học). Ở Câu 2 (Cosine Similarity), tester đọc nhanh và chọn phương án A (đo góc giữa 2 vector).
+  - Sau khi bấm nộp bài, Refresher Card hiện ra. Tester dừng lại đọc đoạn tóm tắt và gật đầu đồng ý.
 - **Phát biểu thành tiếng (Exact Quotes):**
-  - *"Lúc đầu tôi hơi khựng lại vì nghĩ 'Ủa đang làm bài tập sai bực mình lại bắt làm trắc nghiệm nữa hả?'. Nhưng 2 câu này hỏi trúng ngay chỗ tôi đang phân vân nên làm xong cảm thấy rất chắc chắn là mình đã sai ở đâu."*
-  - *"Cái thẻ ôn tập 60s sau đó rất gọn, không phải đọc cả trang lý thuyết dài dòng."*
+  - *"Lúc đầu tôi hơi khựng lại vì nghĩ 'Đang làm bài tập tự nhiên lại bắt làm trắc nghiệm nữa?'. Nhưng 2 câu này hỏi trúng ngay rào cản phân biệt giữa số từ và số chiều, nên làm xong tôi cảm thấy rất tự tin."*
+  - *"Thẻ tóm tắt 60s rất cô đọng, có cả công thức hình học trực quan."*
 - **Sử dụng quyền kiểm soát (Human Control):**
-  - Tester nhận thấy dòng *"Bỏ qua bài kiểm tra → Xem giải thích ngay"* nhưng chọn không bấm vì muốn thử xem AI chấm mình đúng hay sai.
-  - Sau khi xem xong, tester bấm nút *"Đã hiểu! Quay lại sửa bài tập"* và quay lại màn hình code mượt mà.
+  - Tester nhìn thấy nút *"Bỏ qua chẩn đoán, quay lại bài"* và ghi nhận đây là đường thoát tốt nếu người học đang vội.
+  - Sau khi đọc xong, tester bấm nút *"Đã hiểu! Quay lại bài học"* và trở về đúng màn hình code.
 
 ---
 
-### Option B: Concept Dependency Map (Bản đồ phụ thuộc khái niệm & Tự chọn)
+### Option B: Knowledge Checklist (User-Led drawer phân rã kiến thức)
 - **Hành vi quan sát được:**
-  - Tester ngay lập tức bị thu hút bởi chỉ số phần trăm nghi vấn màu đỏ `[Nghi vấn cao: 88%]`.
-  - Không cần suy nghĩ nhiều, tester click ngay vào Node 1 (Critical Section & Mutex Scope).
-  - Khi khung nội dung mở ra, tester thấy thanh chọn độ sâu (Depth Select) và tò mò đổi thử từ "Chi tiết kỹ thuật" sang "TL;DR 30s".
+  - Tester mở drawer "Mắt xích kiến thức nền bài này". Mắt xích đầu tiên đang được tick chọn mặc định.
+  - Tester tò mò bấm vào Mắt xích 2 (`[ ] Vector Dimension (1536 chiều là gì?)`) và Mắt xích 3 (`[ ] Cosine Similarity tính thế nào?`). Nội dung micro-lesson bên dưới lập tức đổi tương ứng.
+  - Tester đọc phần ELI5 Visual Guide giải thích về việc vector luôn cố định chiều bất kể độ dài văn bản.
 - **Phát biểu thành tiếng (Exact Quotes):**
-  - *"Giao diện này cho tôi cảm giác làm chủ hoàn toàn. Tôi là kỹ sư nên tôi thích nhìn thấy bức tranh tổng thể các khái niệm liên quan trước rồi tự quyết định đọc cái nào."*
-  - *"Cái nút chuyển độ sâu 30s rất đắt giá! Lúc đang vội sửa bug tôi chỉ cần đọc 2 dòng tóm tắt đó là đủ code tiếp, không cần phải đọc giải thích dài."*
+  - *"Phương án này cho tôi cảm giác hoàn toàn làm chủ! Tôi không thích bị máy hỏi bài, tôi thích tự mở bảng mục lục kiến thức nền để xem mình đang quên chỗ nào."*
+  - *"Phần giải thích ví dụ từ 'Vua' với 'Hoàng hậu' rất trực quan, dân mới học đọc vào là hiểu ngay bản chất vector embedding."*
 - **Sử dụng quyền kiểm soát (Human Control):**
-  - Tester thử bấm sang Node 2 (Token Refill Math) để kiểm tra xem nội dung có đổi không, sau đó quay lại Node 1.
-  - Tester nhận xét: *"Rất thích việc có thể đổi qua lại giữa các node mà không bị mất dấu hay phải tải lại trang"*.
+  - Tester thử bỏ tick và tick lại các mục; kiểm tra nút *"Mở bài giảng gốc trong giáo trình"* và nút *"Đóng drawer"* hoạt động nhanh chóng.
 
 ---
 
-### Option C: Socratic Dialogue Probe (Đối thoại gợi mở 2 lượt)
+### Option C: A/B Contrast & Escalation (Đối chiếu cách hiểu & Kết nối Mentor)
 - **Hành vi quan sát được:**
-  - Khi AI đưa ra ví dụ ẩn dụ về "hai người cùng nhìn vào ví tiền 100k", tester bật cười: *"Ví dụ này hài hước và dễ hiểu ghê"*.
-  - Tester click chọn câu trả lời A ("Cả hai đều rút được khiến ví bị âm tiền").
-  - AI phản hồi giải thích ngay về hiện tượng Race Condition tương ứng trong code.
-  - Tiếp theo, tester thử ấn vào nút khẩn cấp *"⚡ Giải thích thẳng luôn, đừng hỏi nữa"* để kiểm tra chức năng cứu cánh.
+  - Tester đọc 2 kịch bản tương phản và bật cười khi thấy Cách hiểu A: *"Ủa cái này đúng là cái tôi từng nghĩ hồi mới học NLP này, tưởng 1536 từ!"*.
+  - Tester bấm chọn Cách hiểu B, hệ thống hiển thị xác nhận và phân tích điểm khác biệt giữa Token Count và Embedding Dimension.
+  - Tester xem qua phần Escalation và bấm thử nút *"Gửi ticket hỗ trợ 1-1 cho Trợ giảng"*. Khi hộp thoại xác nhận hiện ra liệt kê đúng bài học và mã nguồn liên quan, tester ấn hủy để test tính năng phục hồi.
 - **Phát biểu thành tiếng (Exact Quotes):**
-  - *"Cái này cực kỳ hợp với các bạn mới học lập trình hoặc học viên non-tech, vì ví dụ đời thường làm tan biến nỗi sợ thuật toán."*
-  - *"Tuy nhiên nếu là người đã có kinh nghiệm và chỉ đang đãng trí quên thụt lề code, việc phải đọc câu hỏi gợi mở có thể khiến họ thấy hơi mất kiên nhẫn. Rất may là có cái nút 'Giải thích thẳng luôn'."*
+  - *"Cách tiếp cận tương phản A vs B này cực kỳ hiệu quả để trị bệnh ngộ nhận! Nhiều khi học viên không biết mình hiểu sai cho đến khi nhìn thấy câu ngộ nhận viết rành rành ra đó."*
+  - *"Có nút gửi Trợ giảng kèm tóm tắt context là một 'lưới an toàn' tâm lý rất tốt cho học viên non-tech."*
 - **Sử dụng quyền kiểm soát (Human Control):**
-  - Nút giải thích thẳng hoạt động tức thì, hiển thị ngay chỉ dẫn sửa lỗi dòng 18-20.
+  - Tester xác nhận luồng preview ticket trước khi gửi giúp người học hoàn toàn kiểm soát việc chia sẻ dữ liệu với Mentor.
 
 ---
 
 ## 2. Đánh giá So sánh từ Tester (Tester Synthesis)
-- **Xếp hạng mức độ ưa thích:** Option B (Concept Map) > Option A (Quiz) > Option C (Socratic).
-- **Lý do:** Tester đánh giá cao **tính minh bạch (transparency) và tốc độ (speed)** của Option B, vì nó vừa tôn trọng quyền tự chủ của người học, vừa đưa ra chỉ số bằng chứng định lượng rõ ràng.
+- **Xếp hạng mức độ ưa thích:** Option B (Checklist) > Option C (A/B Contrast) > Option A (Quiz).
+- **Lý do:** Tester đánh giá cao **sự chủ động (User Agency)** của Option B và **tính phản biện nhận thức (Cognitive Impact)** của Option C; trong khi Option A dù chẩn đoán chính xác nhưng vẫn mang tính "ép buộc thi cử".
 
 ---
 
 ## 3. Bài học & Thay đổi đề xuất từ phiên điều phối (Facilitator Takeaways)
-1. **Next Change cụ thể:** Cần bổ sung khả năng **tự động ghi nhớ độ sâu ưa thích** (ví dụ nếu người học là dân kỹ thuật, mặc định hiển thị tab Code So Sánh; nếu người học non-tech, mặc định hiển thị TL;DR trực quan).
-2. **Still Unproven:** Liệu người học non-tech (như bạn Linh - Marketing trong Day 17) khi nhìn thấy Bản đồ khái niệm (Option B) có tự tin chọn đúng node hay sẽ bị ngợp bởi các thuật ngữ chuyên ngành? Cần kiểm chứng thêm với nhóm học viên chuyển ngành.
+1. **Next Change cụ thể:** Kết hợp ưu điểm của Option B và Option C thành một luồng thống nhất: Giao diện hiển thị Knowledge Checklist (Option B), nhưng khi click vào từng mắt xích, hiển thị nội dung dạng đối chiếu ngộ nhận A vs B (Option C) để tăng độ sâu tiếp thu.
+2. **Still Unproven:** Liệu học viên non-tech khi tự duyệt checklist (Option B) có khả năng tự nhận biết chính xác mắt xích mình đang yếu hay sẽ tick bừa nếu gặp quá nhiều thuật ngữ kỹ thuật mới?

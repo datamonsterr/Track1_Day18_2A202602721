@@ -77,10 +77,10 @@
         Option A: Diagnostic Quiz (AI-Led)
       </button>
       <button id="tab-opt-b" onclick="switchOption('B')" class="px-3 py-1.5 rounded-md text-xs font-medium text-slate-400 hover:text-white transition-all">
-        Option B: Concept Map (User-Select)
+        Option B: Knowledge Checklist (User-Led)
       </button>
       <button id="tab-opt-c" onclick="switchOption('C')" class="px-3 py-1.5 rounded-md text-xs font-medium text-slate-400 hover:text-white transition-all">
-        Option C: Socratic Dialogue (2-Turn)
+        Option C: A/B Contrast & Escalation (Co-create & Human)
       </button>
     </div>
 
@@ -96,11 +96,11 @@
   <!-- Context & Instructions Banner for External Testers -->
   <div class="bg-brand-surface2/60 border-b border-brand-border px-6 py-2.5 text-xs text-slate-300 flex flex-wrap items-center justify-between gap-2">
     <div class="flex items-center space-x-2">
-      <span class="bg-brand-coral/20 text-brand-coral font-semibold px-2 py-0.5 rounded code-font">TEST TASK</span>
-      <span>Bạn đang giải lab <strong>Rate Limiter (Token Bucket)</strong> và gặp lỗi <code class="bg-slate-800 px-1 py-0.5 rounded text-amber-300">Race Condition / Overfill</code>. Hãy bấm <strong class="text-brand-cyan">"Tôi vẫn chưa hiểu"</strong> để trải nghiệm chẩn đoán & ôn tập.</span>
+      <span class="bg-brand-coral/20 text-brand-coral font-semibold px-2 py-0.5 rounded code-font">FIXTURE</span>
+      <span><strong>Bài 4: Xây dựng RAG Agent cơ bản với LangChain</strong> — Tại bước VectorStore Indexing, học viên gặp lỗi/bối rối thuật ngữ: <code class="bg-slate-800 px-1 py-0.5 rounded text-amber-300">Embedding Dimension & Cosine Similarity</code>.</span>
     </div>
     <div id="mechanism-badge" class="text-brand-cyanLight code-font">
-      Cơ chế hiện tại: [AI chủ động kiểm tra kiến thức qua quiz 2 câu]
+      Cơ chế hiện tại: [AI-Led: Chẩn đoán trắc nghiệm tự động 2 câu & thẻ ôn tập 60s]
     </div>
   </div>
 
@@ -113,75 +113,70 @@
       <!-- Module Header -->
       <div class="flex items-center justify-between pb-4 border-b border-brand-border mb-4">
         <div>
-          <span class="text-xs uppercase tracking-wider text-brand-cyan code-font font-semibold">Chương 4 · Concurrency & Distributed Systems</span>
-          <h1 class="text-xl font-bold text-white mt-0.5">Lab 4.2: Triển khai Thread-safe Token Bucket Rate Limiter</h1>
+          <span class="text-xs uppercase tracking-wider text-brand-cyan code-font font-semibold">Chương 2 · LangChain & Vector Databases</span>
+          <h1 class="text-xl font-bold text-white mt-0.5">Bài 4: Xây dựng RAG Agent cơ bản với LangChain</h1>
         </div>
         <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/30 flex items-center gap-1.5">
-          <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> Trạng thái: Lỗi bài nộp #3
+          <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> Bước 3: VectorStore Indexing
         </span>
       </div>
 
       <!-- Problem Statement -->
-      <div class="text-sm text-slate-300 space-y-3 mb-6 leading-relaxed">
+      <div class="text-sm text-slate-300 space-y-3 mb-4 leading-relaxed">
         <p>
-          <strong>Yêu cầu:</strong> Hoàn thiện class <code class="code-font text-brand-cyanLight bg-slate-900 px-1.5 py-0.5 rounded">TokenBucketLimiter</code> với dung lượng <code class="code-font text-slate-200">capacity=100</code> và tốc độ nạp <code class="code-font text-slate-200">refill_rate=10 tokens/sec</code>. Hàm <code class="code-font text-brand-cyanLight">allow_request(tokens)</code> phải đảm bảo tính toàn vẹn khi có 50 threads gọi đồng thời.
+          <strong>Yêu cầu:</strong> Khởi tạo VectorStore Chroma, thực hiện nhúng (embed) các đoạn văn bản (Chunks) bằng mô hình embedding và thực hiện truy vấn tương đồng (Similarity Search) với ngưỡng <code class="code-font text-brand-cyanLight">cosine_similarity &gt;= 0.75</code>.
         </p>
       </div>
 
       <!-- Mock Code Editor -->
       <div class="rounded-lg border border-brand-border bg-slate-950 p-4 font-mono text-xs overflow-x-auto mb-4 relative shadow-inner">
         <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-800 text-slate-500 text-[11px]">
-          <span>solution.py</span>
-          <span>Python 3.11</span>
+          <span>rag_indexing.py</span>
+          <span>Python 3.11 · LangChain 0.2</span>
         </div>
-        <pre class="text-slate-300 leading-5"><code><span class="text-purple-400">import</span> time
-<span class="text-purple-400">import</span> threading
+        <pre class="text-slate-300 leading-5"><code><span class="text-purple-400">from</span> langchain_community.vectorstores <span class="text-purple-400">import</span> Chroma
+<span class="text-purple-400">from</span> langchain_openai <span class="text-purple-400">import</span> OpenAIEmbeddings
 
-<span class="text-blue-400">class</span> <span class="text-yellow-300">TokenBucketLimiter</span>:
-    <span class="text-blue-400">def</span> <span class="text-green-400">__init__</span>(self, capacity: <span class="text-orange-300">int</span>, refill_rate: <span class="text-orange-300">float</span>):
-        self.capacity = capacity
-        self.tokens = capacity
-        self.refill_rate = refill_rate
-        self.last_refill = time.time()
-        self.lock = threading.Lock()
+<span class="text-slate-500"># 1. Khởi tạo mô hình Embedding</span>
+embeddings = OpenAIEmbeddings(model=<span class="text-green-300">"text-embedding-3-small"</span>)
 
-    <span class="text-blue-400">def</span> <span class="text-green-400">allow_request</span>(self, tokens: <span class="text-orange-300">int</span> = 1) -> <span class="text-orange-300">bool</span>:
-        now = time.time()
-        elapsed = now - self.last_refill
-        <span class="text-slate-500"># BUG POTENTIAL: Refill formula & lock scoping</span>
-        added_tokens = elapsed * self.refill_rate
-        self.tokens = min(self.capacity, self.tokens + added_tokens)
-        self.last_refill = now
-        
-        <span class="text-purple-400">with</span> self.lock:
-            <span class="text-purple-400">if</span> self.tokens >= tokens:
-                self.tokens -= tokens
-                <span class="text-purple-400">return</span> <span class="text-green-300">True</span>
-            <span class="text-purple-400">return</span> <span class="text-red-400">False</span></code></pre>
+<span class="text-slate-500"># 2. Khởi tạo VectorStore Indexing</span>
+vector_store = Chroma.from_documents(
+    documents=doc_chunks,
+    embedding=embeddings,
+    collection_name=<span class="text-green-300">"knowledge_base"</span>
+)
+
+<span class="text-slate-500"># 3. Truy vấn tương đồng ngữ nghĩa</span>
+query = <span class="text-green-300">"Khung năng lực AI Product Manager gồm những gì?"</span>
+results = vector_store.similarity_search_with_relevance_scores(
+    query=query, 
+    k=3,
+    score_threshold=0.75  <span class="text-slate-500"># Ngưỡng Cosine Similarity</span>
+)</code></pre>
       </div>
 
       <!-- Test Run Output / Terminal -->
-      <div class="rounded-lg border border-red-900/50 bg-red-950/20 p-3.5 mb-6 text-xs code-font">
-        <div class="flex items-center text-red-400 font-semibold mb-1.5 gap-2">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-          FAILED: TestConcurrentBursts (4/5 tests passed)
+      <div class="rounded-lg border border-amber-900/50 bg-amber-950/20 p-3.5 mb-6 text-xs code-font">
+        <div class="flex items-center text-amber-400 font-semibold mb-1.5 gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+          HỌC VIÊN GẶP RÀO CẢN KHÁI NIỆM (Vector Indexing Gap)
         </div>
         <p class="text-slate-300 text-[11px] leading-relaxed">
-          <span class="text-red-300">AssertionError:</span> Expected max 100 requests granted in 0.01s, but 127 requests succeeded! 
-          <br><span class="text-slate-400">Gợi ý lỗi:</span> Giá trị <code class="text-yellow-300">self.tokens</code> bị đọc/ghi ngoài lock trước khi acquire lock, gây hiện tượng Race Condition khi nạp token.
+          <span class="text-amber-300">Vướng mắc:</span> Học viên phân vân không hiểu tại sao độ dài văn bản khác nhau nhưng vector đầu ra luôn có <strong>1536 chiều (Dimension)</strong>, và làm thế nào <strong>Cosine Similarity</strong> so sánh được độ liên quan giữa câu hỏi và đoạn văn dài.
         </p>
       </div>
 
       <!-- Action Buttons: The Trigger Button -->
       <div class="mt-auto pt-4 border-t border-brand-border flex items-center justify-between">
         <button class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium border border-slate-700 transition">
-          Chạy lại kiểm thử
+          Chạy lại indexing
         </button>
 
         <div class="flex items-center space-x-3">
           <button id="trigger-btn" onclick="triggerHelp()" class="px-4 py-2 rounded-lg bg-brand-cyan/20 hover:bg-brand-cyan/30 text-brand-cyan border border-brand-cyan/50 text-xs font-semibold flex items-center gap-2 transition glow-cyan">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            <span>Tôi vẫn chưa hiểu</span>
+            <span id="trigger-btn-text">Tôi vẫn chưa hiểu</span>
           </button>
         </div>
       </div>
@@ -194,7 +189,7 @@
       <div class="flex items-center justify-between pb-3 border-b border-brand-border mb-4">
         <div class="flex items-center space-x-2">
           <span class="w-2 h-2 rounded-full bg-brand-cyan"></span>
-          <h2 class="text-sm font-semibold text-white uppercase tracking-wider code-font" id="option-title">Option A: Diagnostic Quiz</h2>
+          <h2 class="text-sm font-semibold text-white uppercase tracking-wider code-font" id="option-title">Option A: Diagnostic Refresher (AI-Led)</h2>
         </div>
         <div class="flex items-center space-x-2">
           <button onclick="closeRefresher()" class="text-xs text-slate-400 hover:text-white px-2 py-1 rounded bg-slate-800/80 border border-slate-700 hover:bg-slate-700 transition flex items-center gap-1" title="Quay lại bài làm ngay lập tức">
@@ -203,17 +198,17 @@
         </div>
       </div>
 
-      <!-- STATE 0: IDLE STATE (Before clicking 'Tôi vẫn chưa hiểu') -->
+      <!-- STATE 0: IDLE STATE (Before clicking trigger) -->
       <div id="state-idle" class="flex-1 flex flex-col items-center justify-center text-center p-8 text-slate-400">
         <div class="w-12 h-12 rounded-full bg-brand-surface2 border border-brand-border flex items-center justify-center text-brand-cyan mb-3">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
         </div>
-        <h3 class="text-white font-medium text-sm mb-1">AI Diagnostic Refresher đang chờ</h3>
-        <p class="text-xs leading-relaxed max-w-sm mb-4">
-          Khi gặp bế tắc hoặc chưa rõ nguyên nhân lỗi trong bài nộp, hãy bấm nút <span class="text-brand-cyan font-medium">"Tôi vẫn chưa hiểu"</span> ở thanh công cụ bài tập bên trái.
+        <h3 class="text-white font-medium text-sm mb-1" id="idle-headline">Trợ Giảng AI Chẩn Đoán Sẵn Sàng</h3>
+        <p class="text-xs leading-relaxed max-w-sm mb-4" id="idle-desc">
+          Khi gặp bế tắc về khái niệm <span class="text-brand-cyan font-medium">Embedding Dimension & Cosine Similarity</span>, hãy bấm nút kích hoạt ở thanh công cụ bên trái.
         </p>
         <button onclick="triggerHelp()" class="px-4 py-2 rounded-md bg-brand-cyan text-slate-950 font-semibold text-xs hover:bg-brand-cyanLight transition">
-          Thử kích hoạt ngay
+          Kích hoạt hỗ trợ ngay
         </button>
       </div>
 
@@ -221,53 +216,49 @@
       <!-- OPTION A: AI-Led Diagnostic Quiz Container -->
       <!-- ========================================== -->
       <div id="option-a-container" class="hidden flex-1 flex flex-col">
-        <!-- Human Agency & Evidence Box -->
+        <!-- Expectation & Evidence Box -->
         <div class="p-3 rounded-lg bg-brand-surface2 border border-brand-border mb-4 text-xs">
           <div class="flex items-center justify-between text-slate-400 mb-1">
-            <span class="code-font text-[11px] text-brand-cyan font-medium">BẰNG CHỨNG HỆ THỐNG</span>
-            <span class="text-[11px] text-slate-400">Độ tin cậy AI: 82%</span>
+            <span class="code-font text-[11px] text-brand-cyan font-medium">BẰNG CHỨNG & KỲ VỌNG (AI-LED)</span>
+            <span class="text-[11px] text-slate-400">Chẩn đoán nhanh 60s</span>
           </div>
           <p class="text-slate-300 text-xs">
-            Hệ thống phát hiện lỗi xảy ra trong tình huống đa luồng. Để khoanh vùng chính xác lỗ hổng giữa <em>Nguyên lý Khóa (Mutex)</em> và <em>Công thức Token Math</em>, vui lòng chọn nhanh 2 câu trắc nghiệm:
+            <em>Kỳ vọng:</em> AI sẽ đặt 2 câu hỏi trắc nghiệm nhanh để xác định điểm hổng và tóm tắt kiến thức nền tương ứng trong 60s. Giới hạn trong phạm vi VectorStore & Embeddings của Bài 4.
           </p>
         </div>
 
         <!-- Quiz Form -->
         <div id="quiz-step-1" class="space-y-4 flex-1">
           <div class="p-3.5 rounded-lg bg-slate-900 border border-brand-border">
-            <span class="text-[11px] code-font text-brand-cyan font-semibold">CÂU 1/2</span>
+            <span class="text-[11px] code-font text-brand-cyan font-semibold">CÂU 1/2: VECTOR DIMENSION</span>
             <p class="text-xs text-white font-medium mt-1 mb-3">
-              Trong đoạn code trên, phép tính <code class="text-brand-cyanLight code-font">self.tokens = min(self.capacity, self.tokens + added_tokens)</code> nằm ngoài khối <code class="text-brand-cyanLight code-font">with self.lock:</code> sẽ dẫn đến hệ quả gì?
+              Mô hình <code class="text-brand-cyanLight code-font">text-embedding-3-small</code> tạo ra vector có kích thước 1536 chiều. Con số 1536 này đại diện cho điều gì?
             </p>
             <div class="space-y-2 text-xs">
               <label class="flex items-start p-2 rounded bg-brand-surface2/60 hover:bg-brand-surface2 cursor-pointer border border-transparent hover:border-slate-700 transition">
                 <input type="radio" name="q1" value="A" class="mt-0.5 mr-2.5 text-brand-cyan">
-                <span>A. Tốc độ nạp token bị chậm hơn bình thường.</span>
+                <span>A. Số lượng từ tối đa (tokens) trong đoạn văn bản đầu vào.</span>
               </label>
               <label class="flex items-start p-2 rounded bg-brand-surface2/60 hover:bg-brand-surface2 cursor-pointer border border-transparent hover:border-slate-700 transition">
                 <input type="radio" name="q1" value="B" class="mt-0.5 mr-2.5 text-brand-cyan">
-                <span>B. Race Condition: Hai luồng cùng đọc giá trị cũ rồi ghi đè, làm mất lượt trừ token.</span>
-              </label>
-              <label class="flex items-start p-2 rounded bg-brand-surface2/60 hover:bg-brand-surface2 cursor-pointer border border-transparent hover:border-slate-700 transition">
-                <input type="radio" name="q1" value="C" class="mt-0.5 mr-2.5 text-brand-cyan">
-                <span>C. Không ảnh hưởng vì hàm allow_request chỉ đọc một lần.</span>
+                <span>B. Số lượng tọa độ toán học trong không gian vector để mã hóa ngữ nghĩa đoạn văn.</span>
               </label>
             </div>
           </div>
 
           <div class="p-3.5 rounded-lg bg-slate-900 border border-brand-border">
-            <span class="text-[11px] code-font text-brand-cyan font-semibold">CÂU 2/2</span>
+            <span class="text-[11px] code-font text-brand-cyan font-semibold">CÂU 2/2: COSINE SIMILARITY</span>
             <p class="text-xs text-white font-medium mt-1 mb-3">
-              Mục đích chính của Mutex Lock trong bài toán Rate Limiter là gì?
+              Tại sao Cosine Similarity được ưu tiên sử dụng để đo độ tương đồng văn bản thay vì khoảng cách Euclid thông thường?
             </p>
             <div class="space-y-2 text-xs">
               <label class="flex items-start p-2 rounded bg-brand-surface2/60 hover:bg-brand-surface2 cursor-pointer border border-transparent hover:border-slate-700 transition">
                 <input type="radio" name="q2" value="A" class="mt-0.5 mr-2.5 text-brand-cyan">
-                <span>A. Biến toàn bộ thao tác kiểm tra và cập nhật token thành thao tác nguyên tử (atomic).</span>
+                <span>A. Đo góc giữa 2 vector, không bị ảnh hưởng bởi độ dài ngắn của văn bản gốc.</span>
               </label>
               <label class="flex items-start p-2 rounded bg-brand-surface2/60 hover:bg-brand-surface2 cursor-pointer border border-transparent hover:border-slate-700 transition">
                 <input type="radio" name="q2" value="B" class="mt-0.5 mr-2.5 text-brand-cyan">
-                <span>B. Tự động ngủ (sleep) khi số lượng request vượt ngưỡng.</span>
+                <span>B. Vì Cosine chỉ so sánh các từ khóa trùng lặp 100%.</span>
               </label>
             </div>
           </div>
@@ -275,211 +266,195 @@
           <!-- Recovery & Action Bar -->
           <div class="pt-2 flex items-center justify-between">
             <button onclick="skipQuiz()" class="text-xs text-slate-400 hover:text-slate-200 underline">
-              Bỏ qua bài kiểm tra → Xem giải thích ngay
+              Bỏ qua chẩn đoán, quay lại bài
             </button>
             <button onclick="submitQuiz()" class="px-4 py-2 rounded-lg bg-brand-cyan hover:bg-brand-cyanLight text-slate-950 font-semibold text-xs transition">
-              Nộp câu trả lời & Xem kết quả
+              Nộp & Xem Refresher Card
             </button>
           </div>
         </div>
 
-        <!-- Quiz Result & 1-Minute Micro-Refresher Card -->
+        <!-- Quiz Result & 60s Micro-Refresher Card -->
         <div id="quiz-result" class="hidden space-y-4 flex-1">
           <div class="p-3.5 rounded-lg bg-emerald-950/30 border border-emerald-800/40 text-xs">
             <span class="text-emerald-400 font-semibold flex items-center gap-1.5 mb-1">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-              Chẩn đoán hoàn tất: Xác định chính xác lỗ hổng!
+              Căn cứ chẩn đoán:
             </span>
             <p class="text-slate-300 text-[12px]">
-              Bạn đã hiểu đúng khái niệm Mutex, nhưng chưa bao bọc toàn bộ chu kỳ <strong>(tính toán nạp token + trừ token)</strong> vào trong Critical Section.
+              Dựa trên bài học VectorStore và 2 câu trả lời quiz vừa rồi của bạn, AI nhận thấy bạn đang vướng ở: <strong>Bản chất hình học của Cosine Similarity</strong>.
             </p>
           </div>
 
           <!-- Micro Refresher Card -->
           <div class="p-4 rounded-lg bg-slate-900 border border-brand-border space-y-3">
             <div class="flex items-center justify-between border-b border-slate-800 pb-2">
-              <span class="text-xs font-bold text-white uppercase tracking-wider">Thẻ Ôn Tập 60s: Critical Section Scoping</span>
-              <span class="text-[11px] code-font text-brand-cyan bg-brand-cyan/10 px-2 py-0.5 rounded">Khái niệm cốt lõi</span>
+              <span class="text-xs font-bold text-white uppercase tracking-wider">Refresher Card: Embedding Dimension & Cosine Similarity</span>
+              <span class="text-[11px] code-font text-brand-cyan bg-brand-cyan/10 px-2 py-0.5 rounded">Tóm tắt 60s</span>
             </div>
             <p class="text-xs text-slate-300 leading-relaxed">
-              Mọi biến trạng thái chia sẻ (<code class="code-font text-amber-300">self.tokens</code>, <code class="code-font text-amber-300">self.last_refill</code>) cần phải được bảo vệ từ lúc bắt đầu đọc giá trị cũ cho đến khi hoàn tất ghi giá trị mới.
+              1. <strong>Dimension (1536):</strong> Bất kể câu văn dài 3 từ hay đoạn văn dài 500 từ, mô hình embedding luôn nén ngữ nghĩa thành một điểm gồm 1536 tọa độ thực.
+              <br><br>
+              2. <strong>Cosine Similarity:</strong> Đo góc $\theta$ giữa 2 vector hướng. Nếu 2 đoạn văn cùng chung ý nghĩa ngữ cảnh, 2 mũi tên sẽ chỉ về cùng một hướng ($\cos \theta \to 1$), bất kể độ dài văn bản chênh lệch bao nhiêu.
             </p>
-            <div class="p-2.5 rounded bg-slate-950 border border-slate-800 font-mono text-[11px] text-slate-300">
-              <span class="text-slate-500"># Khắc phục đúng:</span><br>
-              <span class="text-purple-400">with</span> self.lock:<br>
-              &nbsp;&nbsp;elapsed = now - self.last_refill<br>
-              &nbsp;&nbsp;self.tokens = min(self.capacity, self.tokens + elapsed * self.refill_rate)<br>
-              &nbsp;&nbsp;self.last_refill = now<br>
-              &nbsp;&nbsp;<span class="text-purple-400">if</span> self.tokens >= tokens: ...
-            </div>
           </div>
 
           <div class="flex items-center justify-between pt-2">
             <button onclick="resetOptionA()" class="text-xs text-slate-400 hover:text-slate-200">
-              ← Kiểm tra lại câu hỏi khác
+              Đây không phải phần tôi cần (Đổi concept)
             </button>
             <button onclick="closeRefresher()" class="px-4 py-2 rounded-lg bg-brand-emerald hover:bg-emerald-400 text-slate-950 font-semibold text-xs transition">
-              Đã hiểu! Quay lại sửa bài tập →
+              Đã hiểu! Quay lại bài học →
             </button>
           </div>
         </div>
       </div>
 
       <!-- ======================================================= -->
-      <!-- OPTION B: Interactive Concept Map & Self-Select Container -->
+      <!-- OPTION B: Knowledge Checklist (User-Led) Container     -->
       <!-- ======================================================= -->
       <div id="option-b-container" class="hidden flex-1 flex flex-col">
-        <!-- Evidence & Transparency Box -->
+        <!-- Expectation & Guidance Box -->
         <div class="p-3 rounded-lg bg-brand-surface2 border border-brand-border mb-3 text-xs">
           <div class="flex items-center justify-between text-slate-400 mb-1">
-            <span class="code-font text-[11px] text-brand-cyan font-medium">BẢN ĐỒ KHÁI NIỆM NỀN (CONCEPT RADAR)</span>
-            <span class="text-[11px] text-slate-400">User chủ động chọn nhánh</span>
+            <span class="code-font text-[11px] text-brand-cyan font-medium">MẮT XÍCH KIẾN THỨC NỀN (USER-LED CHECKLIST)</span>
+            <span class="text-[11px] text-slate-400">Tự soi chiếu 100%</span>
           </div>
           <p class="text-slate-300 text-xs">
-            Hệ thống phân tích lịch sử làm bài và gợi ý 3 mảng kiến thức liên quan. Hãy chọn chủ đề bạn cảm thấy bối rối nhất để mở thẻ ôn tập theo mức độ tùy chỉnh:
+            <em>Kỳ vọng:</em> AI đã bóc tách sẵn các khái niệm prerequisite của bài học. Bạn tự tick chọn điểm mình thấy mơ hồ để mở micro-lesson trực quan tương ứng (không làm hộ bài tập).
           </p>
         </div>
 
-        <!-- Interactive Concept Nodes -->
-        <div class="grid grid-cols-1 gap-2.5 mb-4">
-          
-          <!-- Node 1: Critical Section & Mutex (High Suspicion) -->
-          <div onclick="selectConceptNode(1)" id="concept-node-1" class="p-3 rounded-lg bg-slate-900 border-2 border-red-500/60 hover:border-red-400 cursor-pointer transition flex items-center justify-between">
-            <div>
-              <div class="flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-red-400"></span>
-                <span class="text-xs font-bold text-white">1. Critical Section & Mutex Scope</span>
-                <span class="text-[10px] code-font px-1.5 py-0.2 rounded bg-red-950 text-red-300 border border-red-800">Nghi vấn cao (88%)</span>
+        <!-- Checklist Nodes -->
+        <div class="space-y-2 mb-4">
+          <div onclick="selectChecklistNode(1)" id="check-item-1" class="p-3 rounded-lg bg-slate-900 border-2 border-brand-cyan cursor-pointer transition flex items-center justify-between">
+            <div class="flex items-start gap-2.5">
+              <input type="checkbox" id="cb-1" checked class="mt-0.5 rounded text-brand-cyan bg-slate-800 border-slate-700">
+              <div>
+                <span class="text-xs font-bold text-white">Mắt xích 1: Vector Embeddings & Tokenization</span>
+                <p class="text-[11px] text-slate-400 mt-0.5">Nguồn: Trích xuất từ Bài 2: Nhập môn Vector Embeddings.</p>
               </div>
-              <p class="text-[11px] text-slate-400 mt-1">Lỗi xảy ra do biến chia sẻ được đọc trước khi acquire lock.</p>
             </div>
-            <span class="text-xs text-brand-cyan underline">Xem ôn tập →</span>
+            <span class="text-xs text-brand-cyan font-medium">Đang xem</span>
           </div>
 
-          <!-- Node 2: Token Bucket Math & Pacing -->
-          <div onclick="selectConceptNode(2)" id="concept-node-2" class="p-3 rounded-lg bg-slate-900 border border-slate-800 hover:border-amber-500/50 cursor-pointer transition flex items-center justify-between">
-            <div>
-              <div class="flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-                <span class="text-xs font-bold text-white">2. Token Refill Math (Elapsed Time)</span>
-                <span class="text-[10px] code-font px-1.5 py-0.2 rounded bg-amber-950 text-amber-300 border border-amber-800">Cần củng cố (45%)</span>
+          <div onclick="selectChecklistNode(2)" id="check-item-2" class="p-3 rounded-lg bg-slate-900 border border-slate-800 hover:border-slate-700 cursor-pointer transition flex items-center justify-between">
+            <div class="flex items-start gap-2.5">
+              <input type="checkbox" id="cb-2" class="mt-0.5 rounded text-brand-cyan bg-slate-800 border-slate-700">
+              <div>
+                <span class="text-xs font-bold text-white">Mắt xích 2: Vector Dimension (1536 chiều là gì?)</span>
+                <p class="text-[11px] text-slate-400 mt-0.5">Không gian biểu diễn ngữ nghĩa cố định chiều.</p>
               </div>
-              <p class="text-[11px] text-slate-400 mt-1">Cách tính lượng token hồi phục theo thời gian trôi qua.</p>
             </div>
-            <span class="text-xs text-slate-500 hover:text-slate-300">Xem ôn tập →</span>
+            <span class="text-xs text-slate-500 hover:text-slate-300">Xem micro-lesson</span>
           </div>
 
-          <!-- Node 3: Atomic Operations in Python GIL -->
-          <div onclick="selectConceptNode(3)" id="concept-node-3" class="p-3 rounded-lg bg-slate-900 border border-slate-800 hover:border-slate-700 cursor-pointer transition flex items-center justify-between">
-            <div>
-              <div class="flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                <span class="text-xs font-bold text-white">3. Python Threading & GIL Boundaries</span>
-                <span class="text-[10px] code-font px-1.5 py-0.2 rounded bg-emerald-950 text-emerald-300 border border-emerald-800">Đã vững (15%)</span>
+          <div onclick="selectChecklistNode(3)" id="check-item-3" class="p-3 rounded-lg bg-slate-900 border border-slate-800 hover:border-slate-700 cursor-pointer transition flex items-center justify-between">
+            <div class="flex items-start gap-2.5">
+              <input type="checkbox" id="cb-3" class="mt-0.5 rounded text-brand-cyan bg-slate-800 border-slate-700">
+              <div>
+                <span class="text-xs font-bold text-white">Mắt xích 3: Cosine Similarity tính thế nào?</span>
+                <p class="text-[11px] text-slate-400 mt-0.5">Công thức đo góc giữa 2 vector trong truy vấn RAG.</p>
               </div>
-              <p class="text-[11px] text-slate-400 mt-1">Bản chất GIL và lý do vẫn cần Lock cho bytecode phức tạp.</p>
             </div>
-            <span class="text-xs text-slate-500 hover:text-slate-300">Xem ôn tập →</span>
+            <span class="text-xs text-slate-500 hover:text-slate-300">Xem micro-lesson</span>
           </div>
         </div>
 
-        <!-- Interactive Depth Slider & Customized Refresher Pane -->
-        <div id="node-detail-pane" class="p-4 rounded-lg bg-brand-surface2 border border-brand-border space-y-3 flex-1 flex flex-col justify-between">
+        <!-- Micro-lesson Drawer Content -->
+        <div class="p-4 rounded-lg bg-brand-surface2 border border-brand-border flex-1 flex flex-col justify-between">
           <div>
             <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-bold text-brand-cyan" id="selected-node-title">Đang xem: Critical Section & Mutex Scope</span>
-              <!-- Depth Slider for Human Control -->
-              <div class="flex items-center space-x-2 text-[11px] text-slate-400">
-                <span>Độ sâu:</span>
-                <select id="depth-select" onchange="changeDepth()" class="bg-slate-900 text-xs text-slate-200 border border-slate-700 rounded px-2 py-0.5 code-font">
-                  <option value="quick">TL;DR 30s (Trực quan)</option>
-                  <option value="deep" selected>Chi tiết kỹ thuật (Code so sánh)</option>
-                </select>
-              </div>
+              <span class="text-xs font-bold text-brand-cyan" id="checklist-detail-title">Micro-lesson: Vector Embeddings & Tokenization</span>
+              <span class="text-[11px] code-font text-slate-400">ELI5 Visual Guide</span>
             </div>
-
-            <!-- Content Area dynamically changed -->
-            <div id="node-content" class="text-xs text-slate-300 space-y-2 leading-relaxed">
+            <div id="checklist-detail-content" class="text-xs text-slate-300 space-y-2 leading-relaxed">
               <p>
-                <strong>Nguyên lý:</strong> Nếu một thread tính toán <code class="text-amber-300">self.tokens = self.tokens + added</code> mà không giữ khóa, thread khác có thể xen vào giữa bước đọc và ghi, dẫn đến kết quả ghi đè sai lệch (Lost Update).
+                <strong>Bản chất:</strong> Máy tính không hiểu trực tiếp từ ngữ như con người. Embedding biến mỗi từ/câu thành một danh sách số (vector) sao cho những từ có ý nghĩa gần nhau (như "Vua" và "Hoàng đế") sẽ nằm cạnh nhau trong không gian vector.
               </p>
-              <div class="p-2.5 rounded bg-slate-950 border border-slate-800 font-mono text-[11px] text-slate-300">
-                <span class="text-red-400">❌ Lỗi:</span> with lock chỉ bọc trừ token.<br>
-                <span class="text-emerald-400">✔ Sửa:</span> with lock phải bọc toàn bộ từ tính elapsed đến trừ token.
+              <div class="p-2.5 rounded bg-slate-950 border border-slate-800 text-[11px] text-brand-cyanLight font-mono">
+                "Vua" &rarr; [0.25, 0.88, -0.12, ...]<br>
+                "Hoàng hậu" &rarr; [0.24, 0.85, -0.09, ...] (Góc lệch cực nhỏ!)
               </div>
             </div>
           </div>
 
-          <!-- Bottom Recovery -->
           <div class="pt-3 border-t border-slate-800 flex items-center justify-between">
-            <span class="text-[11px] text-slate-400">Bạn có thể chọn node khác phía trên bất kỳ lúc nào.</span>
+            <button class="text-[11px] text-slate-400 hover:text-white underline">Mở bài giảng gốc trong giáo trình &rarr;</button>
             <button onclick="closeRefresher()" class="px-4 py-2 rounded-lg bg-brand-cyan hover:bg-brand-cyanLight text-slate-950 font-semibold text-xs transition">
-              Quay lại bài làm →
+              Đóng drawer / Tiếp tục học &rarr;
             </button>
           </div>
         </div>
       </div>
 
       <!-- ======================================================= -->
-      <!-- OPTION C: Conversational Socratic Probe Container -->
+      <!-- OPTION C: A/B Contrast & Escalation (Co-create & Human) -->
       <!-- ======================================================= -->
       <div id="option-c-container" class="hidden flex-1 flex flex-col">
-        <!-- Evidence & Safety Box -->
+        <!-- Expectation & Limit Box -->
         <div class="p-3 rounded-lg bg-brand-surface2 border border-brand-border mb-3 text-xs">
           <div class="flex items-center justify-between text-slate-400 mb-1">
-            <span class="code-font text-[11px] text-brand-cyan font-medium">GIA SƯ GỢI MỞ SOCRATIC (2-TURN)</span>
-            <span class="text-[11px] text-slate-400">Tối đa 2 câu hỏi định hướng</span>
+            <span class="code-font text-[11px] text-brand-cyan font-medium">ĐỐI CHIẾU CÁCH HIỂU (A VS B) & KẾT NỐI MENTOR</span>
+            <span class="text-[11px] text-slate-400">Lưới an toàn con người</span>
           </div>
           <p class="text-slate-300 text-xs">
-            Thay vì đưa ngay đáp án, AI sẽ đặt 1 câu hỏi gợi mở để giúp bạn tự nhận thức nguyên nhân lỗi, kèm nút thoát khẩn cấp nếu bạn muốn xem đáp án trực tiếp.
+            <em>Kỳ vọng:</em> 68% học viên mới nhầm lẫn giữa Vector Dimension và Token Count. AI đưa ra 2 cách hiểu tương phản để bạn đối chiếu suy nghĩ của mình. Nếu vẫn bế tắc, Trợ giảng sẽ hỗ trợ 1-1.
           </p>
         </div>
 
-        <!-- Dialogue Stream -->
-        <div class="flex-1 space-y-3 overflow-y-auto mb-3 pr-1 custom-scrollbar text-xs">
-          <!-- AI Turn 1 -->
-          <div class="flex items-start space-x-2">
-            <div class="w-6 h-6 rounded-full bg-brand-cyan flex-shrink-0 flex items-center justify-center text-[10px] text-slate-950 font-bold">AI</div>
-            <div class="p-3 rounded-lg rounded-tl-none bg-slate-900 border border-brand-border text-slate-200 leading-relaxed max-w-[90%]">
-              Chào bạn! Tôi quan sát thấy test case <strong>100 request đồng thời</strong> bị vượt trần thành 127 request. 
-              <br><br>
-              <strong>Câu hỏi gợi mở:</strong> Hãy tưởng tượng có 2 người cùng nhìn vào một ví tiền có 100k cùng 1 lúc. Cả 2 đều thấy đủ tiền và cùng quyết định rút 50k. Chuyện gì xảy ra nếu họ không thông báo cho nhau trước khi rút?
+        <!-- A/B Contrast Cards -->
+        <div id="ab-contrast-cards" class="space-y-3 mb-3">
+          <div onclick="selectContrastOption('A')" class="p-3 rounded-lg bg-slate-900 border border-slate-800 hover:border-brand-cyan cursor-pointer transition">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-xs font-bold text-amber-400">Cách hiểu A (Ngộ nhận phổ biến):</span>
+              <span class="text-[10px] code-font text-slate-400">Chọn phương án này</span>
             </div>
+            <p class="text-xs text-slate-300">
+              "Vector 1536 chiều nghĩa là đoạn văn của tôi có đúng 1536 từ hoặc chữ cái; đoạn văn ngắn hơn thì sẽ bị thiếu chiều."
+            </p>
           </div>
 
-          <!-- User Turn 1 (Pre-selected quick chips or custom response) -->
-          <div id="socratic-user-turn" class="space-y-2 pt-2">
-            <span class="text-[11px] text-slate-400 code-font">Chọn câu trả lời của bạn hoặc gõ nhanh:</span>
-            <div class="space-y-1.5">
-              <button onclick="respondSocratic('A')" class="w-full text-left p-2 rounded bg-brand-surface2/70 hover:bg-brand-surface2 border border-slate-700/60 text-slate-200 text-xs transition">
-                👉 "Cả hai đều rút được, khiến ví bị âm tiền (hoặc tiêu vượt số tiền đang có)!"
-              </button>
-              <button onclick="respondSocratic('B')" class="w-full text-left p-2 rounded bg-brand-surface2/70 hover:bg-brand-surface2 border border-slate-700/60 text-slate-200 text-xs transition">
-                👉 "Một trong hai người sẽ tự động nhường người kia."
-              </button>
+          <div onclick="selectContrastOption('B')" class="p-3 rounded-lg bg-slate-900 border border-slate-800 hover:border-brand-emerald cursor-pointer transition">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-xs font-bold text-emerald-400">Cách hiểu B (Bản chất chuẩn xác):</span>
+              <span class="text-[10px] code-font text-slate-400">Chọn phương án này</span>
             </div>
-          </div>
-
-          <!-- AI Response Turn 2 (Hidden until response) -->
-          <div id="socratic-ai-turn-2" class="hidden flex items-start space-x-2">
-            <div class="w-6 h-6 rounded-full bg-brand-cyan flex-shrink-0 flex items-center justify-center text-[10px] text-slate-950 font-bold">AI</div>
-            <div class="p-3 rounded-lg rounded-tl-none bg-emerald-950/40 border border-emerald-800/40 text-slate-200 leading-relaxed max-w-[90%]">
-              <strong class="text-emerald-400">Chính xác!</strong> Đó chính là hiện tượng <strong>Race Condition</strong> trong code của bạn! 
-              <br><br>
-              Cả hai thread đều thấy <code class="text-amber-300">self.tokens</code> đủ điều kiện vì bạn tính toán số token trước khi vào cửa khóa <code class="text-brand-cyanLight">with self.lock</code>. 
-              <br><br>
-              <strong>Hành động khắc phục:</strong> Di chuyển toàn bộ đoạn tính toán nạp token vào bên trong khối <code class="text-brand-cyanLight">with self.lock:</code>.
-            </div>
+            <p class="text-xs text-slate-300">
+              "Bất kể đoạn văn dài hay ngắn (1 từ hay 500 từ), mô hình luôn nén ngữ nghĩa thành đúng 1536 đặc trưng ngữ nghĩa trong không gian toán học."
+            </p>
           </div>
         </div>
 
-        <!-- Emergency Recovery: "Giải thích thẳng luôn" -->
+        <!-- Contrast Explanation & Escalation Pane -->
+        <div id="contrast-result" class="hidden p-3.5 rounded-lg bg-slate-900 border border-brand-border space-y-3 flex-1 flex flex-col justify-between">
+          <div>
+            <span class="text-xs font-bold text-brand-cyan" id="contrast-feedback-title">Phân tích ngộ nhận tư duy:</span>
+            <p class="text-xs text-slate-300 mt-2 leading-relaxed" id="contrast-feedback-body">
+              Nếu bạn đang nghĩ theo <strong>Cách hiểu A</strong>, bạn đang nhầm lẫn giữa <em>Token Count</em> (độ dài văn bản) và <em>Embedding Dimension</em> (chiều không gian ngữ nghĩa). Khi truy vấn, Cosine Similarity chỉ tính góc nghiêng giữa 2 vector 1536 chiều chứ không đếm số từ!
+            </p>
+          </div>
+
+          <!-- Escalation Section -->
+          <div class="p-3 rounded bg-brand-surface2 border border-slate-800 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-semibold text-slate-300">Bạn vẫn cảm thấy bế tắc sau khi đối chiếu?</span>
+              <span class="text-[10px] code-font text-emerald-400">Trợ giảng trực ban: Online</span>
+            </div>
+            <p class="text-[11px] text-slate-400">
+              Bấm nút bên dưới để AI tự động đính kèm ngữ cảnh (mã nguồn, lỗi Cosine Similarity và cách hiểu bạn chọn) gửi trực tiếp đến Trợ giảng.
+            </p>
+            <button onclick="previewAndEscalateMentor()" class="w-full py-2 rounded bg-brand-coral/20 hover:bg-brand-coral/30 text-brand-coral border border-brand-coral/40 font-semibold text-xs transition">
+              Gửi ticket hỗ trợ 1-1 cho Trợ giảng
+            </button>
+          </div>
+        </div>
+
+        <!-- Emergency Recovery: Thoát về bài làm -->
         <div class="pt-3 border-t border-brand-border flex items-center justify-between">
-          <button onclick="forceDirectAnswer()" class="text-xs text-brand-coral hover:text-rose-300 underline">
-            ⚡ Giải thích thẳng luôn, đừng hỏi nữa
-          </button>
+          <span class="text-[11px] text-slate-400">Bạn có thể hủy bỏ hoặc đóng bất kỳ lúc nào.</span>
           <button onclick="closeRefresher()" class="px-4 py-2 rounded-lg bg-brand-cyan hover:bg-brand-cyanLight text-slate-950 font-semibold text-xs transition">
-            Quay lại bài làm →
+            Quay lại bài làm &rarr;
           </button>
         </div>
       </div>
@@ -504,18 +479,23 @@
         }
       });
 
-      // Update Mechanism Badge
+      // Update Mechanism Badge & Trigger Label
       const badge = document.getElementById('mechanism-badge');
       const title = document.getElementById('option-title');
+      const triggerText = document.getElementById('trigger-btn-text');
+
       if (opt === 'A') {
-        badge.innerText = "Cơ chế hiện tại: [Option A · AI chủ động kiểm tra kiến thức qua quiz 2 câu]";
-        title.innerText = "Option A: Diagnostic Quiz (AI-Led)";
+        badge.innerText = "Cơ chế hiện tại: [Option A · AI-Led: Chẩn đoán trắc nghiệm tự động 2 câu & thẻ ôn tập 60s]";
+        title.innerText = "Option A: Diagnostic Refresher (AI-Led)";
+        triggerText.innerText = "Tôi vẫn chưa hiểu (Quiz 60s)";
       } else if (opt === 'B') {
-        badge.innerText = "Cơ chế hiện tại: [Option B · Bản đồ phụ thuộc khái niệm & User tự chọn]";
-        title.innerText = "Option B: Concept Map (User-Select)";
+        badge.innerText = "Cơ chế hiện tại: [Option B · User-Led: Cây phân rã kiến thức nền (Knowledge Checklist)]";
+        title.innerText = "Option B: Knowledge Checklist (User-Led)";
+        triggerText.innerText = "Mắt xích kiến thức nền";
       } else {
-        badge.innerText = "Cơ chế hiện tại: [Option C · Đối thoại gợi mở Socratic 2-lượt]";
-        title.innerText = "Option C: Socratic Dialogue (2-Turn)";
+        badge.innerText = "Cơ chế hiện tại: [Option C · Co-create & Human: Đối chiếu tương phản A/B & Escalation Trợ giảng]";
+        title.innerText = "Option C: A/B Contrast & Escalation (Co-create & Human)";
+        triggerText.innerText = "Đối chiếu cách hiểu";
       }
 
       if (isHelpActive) {
@@ -556,7 +536,7 @@
       resetOptionA();
       resetOptionB();
       resetOptionC();
-      alert("Đã thiết lập lại trạng thái ban đầu của bài tập!");
+      alert("Đã thiết lập lại trạng thái ban đầu của bài học!");
     }
 
     // Option A logic
@@ -565,7 +545,7 @@
       document.getElementById('quiz-result').classList.remove('hidden');
     }
     function skipQuiz() {
-      submitQuiz();
+      closeRefresher();
     }
     function resetOptionA() {
       document.getElementById('quiz-step-1').classList.remove('hidden');
@@ -573,75 +553,86 @@
     }
 
     // Option B logic
-    function selectConceptNode(id) {
-      const nodes = [1, 2, 3];
-      nodes.forEach(n => {
-        const el = document.getElementById(`concept-node-${n}`);
+    function selectChecklistNode(id) {
+      [1, 2, 3].forEach(n => {
+        const item = document.getElementById(`check-item-${n}`);
+        const cb = document.getElementById(`cb-${n}`);
         if (n === id) {
-          el.classList.add('border-brand-cyan');
-          el.classList.remove('border-slate-800');
+          item.className = "p-3 rounded-lg bg-slate-900 border-2 border-brand-cyan cursor-pointer transition flex items-center justify-between";
+          cb.checked = true;
         } else {
-          el.classList.remove('border-brand-cyan');
+          item.className = "p-3 rounded-lg bg-slate-900 border border-slate-800 hover:border-slate-700 cursor-pointer transition flex items-center justify-between";
+          cb.checked = false;
         }
       });
 
-      const title = document.getElementById('selected-node-title');
-      const content = document.getElementById('node-content');
+      const title = document.getElementById('checklist-detail-title');
+      const content = document.getElementById('checklist-detail-content');
+
       if (id === 1) {
-        title.innerText = "Đang xem: Critical Section & Mutex Scope";
+        title.innerText = "Micro-lesson: Vector Embeddings & Tokenization";
         content.innerHTML = `
-          <p><strong>Nguyên lý:</strong> Nếu một thread tính toán <code class="text-amber-300">self.tokens = self.tokens + added</code> mà không giữ khóa, thread khác có thể xen vào giữa bước đọc và ghi, dẫn đến kết quả ghi đè sai lệch (Lost Update).</p>
-          <div class="p-2.5 rounded bg-slate-950 border border-slate-800 font-mono text-[11px] text-slate-300">
-            <span class="text-red-400">❌ Lỗi:</span> with lock chỉ bọc trừ token.<br>
-            <span class="text-emerald-400">✔ Sửa:</span> with lock phải bọc toàn bộ từ tính elapsed đến trừ token.
+          <p><strong>Bản chất:</strong> Máy tính không hiểu trực tiếp từ ngữ như con người. Embedding biến mỗi từ/câu thành một danh sách số (vector) sao cho những từ có ý nghĩa gần nhau (như "Vua" và "Hoàng đế") sẽ nằm cạnh nhau trong không gian vector.</p>
+          <div class="p-2.5 rounded bg-slate-950 border border-slate-800 text-[11px] text-brand-cyanLight font-mono">
+            "Vua" &rarr; [0.25, 0.88, -0.12, ...]<br>
+            "Hoàng hậu" &rarr; [0.24, 0.85, -0.09, ...] (Góc lệch cực nhỏ!)
           </div>
         `;
       } else if (id === 2) {
-        title.innerText = "Đang xem: Token Refill Math (Elapsed Time)";
+        title.innerText = "Micro-lesson: Vector Dimension (1536 chiều là gì?)";
         content.innerHTML = `
-          <p><strong>Nguyên lý:</strong> Công thức nạp token là <code class="text-brand-cyanLight">(thời gian hiện tại - lần nạp cuối) * refill_rate</code>. Cần dùng phép gán <code class="text-amber-300">min(capacity, tokens + added)</code> để không vượt ngưỡng tối đa.</p>
+          <p><strong>Bản chất:</strong> 1536 chiều là số lượng tọa độ độc lập để mô tả các thuộc tính ngữ nghĩa của câu (ngữ cảnh, sắc thái, chủ đề, thì thời gian...). Bất kể câu ngắn 1 từ hay đoạn văn 500 từ, mô hình đều nén về đúng 1536 con số.</p>
+          <div class="p-2.5 rounded bg-slate-950 border border-slate-800 text-[11px] text-amber-300 font-mono">
+            Độ dài văn bản &ne; Số chiều vector (Dimension cố định theo model).
+          </div>
         `;
       } else {
-        title.innerText = "Đang xem: Python Threading & GIL Boundaries";
+        title.innerText = "Micro-lesson: Cosine Similarity tính thế nào?";
         content.innerHTML = `
-          <p><strong>Nguyên lý:</strong> GIL chỉ đảm bảo an toàn cho các thao tác CPython nguyên tử (atomic bytecode). Việc đọc biến, tính toán số học rồi ghi đè là chuỗi nhiều bytecode, do đó <strong>bắt buộc phải có threading.Lock</strong>.</p>
+          <p><strong>Bản chất:</strong> Cosine Similarity đo góc $\\theta$ giữa hai mũi tên vector trong không gian. Giá trị từ 0 (không liên quan) đến 1 (trùng khớp hoàn toàn về ngữ nghĩa). Vì chỉ đo góc, nó không bị phụ thuộc vào việc văn bản dài hay ngắn.</p>
+          <div class="p-2.5 rounded bg-slate-950 border border-slate-800 text-[11px] text-emerald-400 font-mono">
+            score_threshold = 0.75: Chỉ lấy những chunk có góc lệch ngữ nghĩa rất hẹp với câu hỏi query.
+          </div>
         `;
-      }
-    }
-
-    function changeDepth() {
-      const val = document.getElementById('depth-select').value;
-      if (val === 'quick') {
-        document.getElementById('node-content').innerHTML = `
-          <p class="text-brand-cyanLight font-medium">⚡ Tóm tắt 30s:</p>
-          <p>Lỗi thừa 27 requests xảy ra do bạn để đoạn tính nạp token nằm ngoài khối khóa. <strong>Chỉ cần thụt lề dòng tính nạp token vào trong <code class="text-amber-300">with self.lock:</code> là xong!</strong></p>
-        `;
-      } else {
-        selectConceptNode(1);
       }
     }
     function resetOptionB() {
-      selectConceptNode(1);
-      document.getElementById('depth-select').value = 'deep';
+      selectChecklistNode(1);
     }
 
     // Option C logic
-    function respondSocratic(ans) {
-      document.getElementById('socratic-user-turn').classList.add('hidden');
-      document.getElementById('socratic-ai-turn-2').classList.remove('hidden');
+    function selectContrastOption(choice) {
+      document.getElementById('ab-contrast-cards').classList.add('hidden');
+      const res = document.getElementById('contrast-result');
+      res.classList.remove('hidden');
+
+      const body = document.getElementById('contrast-feedback-body');
+      if (choice === 'A') {
+        body.innerHTML = `
+          Bạn đã chọn <strong>Cách hiểu A</strong>. Đây là điểm ngộ nhận mà <strong>68% người học mới</strong> gặp phải!
+          <br><br>
+          <em>Sự thật:</em> Vector 1536 chiều <strong>không phải là số từ</strong>. Cho dù bạn đưa vào 1 câu "Xin chào" (2 từ), mô hình vẫn xuất ra đúng 1536 con số thực để biểu diễn vị trí ngữ nghĩa của câu đó.
+        `;
+      } else {
+        body.innerHTML = `
+          Bạn đã chọn <strong>Cách hiểu B</strong>. <strong>Chính xác!</strong> Bạn đã nắm vững bản chất cốt lõi của không gian Embedding.
+          <br><br>
+          Điều này giải thích tại sao câu hỏi ngắn của user có thể so khớp mượt mà với chunk tài liệu dài trong VectorStore thông qua Cosine Similarity.
+        `;
+      }
     }
-    function forceDirectAnswer() {
-      document.getElementById('socratic-user-turn').classList.add('hidden');
-      const ai2 = document.getElementById('socratic-ai-turn-2');
-      ai2.classList.remove('hidden');
-      ai2.querySelector('div:last-child').innerHTML = `
-        <strong class="text-brand-cyanLight">Giải thích trực tiếp theo yêu cầu:</strong>
-        <p class="mt-1">Dòng 18-20 đang đọc và ghi biến <code class="text-amber-300">self.tokens</code> ngoài lock. Khi 50 luồng chạy cùng lúc, chúng đọc đè giá trị cũ. Hãy đưa toàn bộ code từ dòng 17 đến 26 vào trong khối <code class="text-brand-cyanLight">with self.lock:</code>.</p>
-      `;
+
+    function previewAndEscalateMentor() {
+      const confirmed = confirm("XÁC NHẬN GỬI TICKET HỖ TRỢ:\n\nNgữ cảnh sẽ gửi tới Trợ giảng:\n- Bài học: Bài 4 LangChain RAG Indexing\n- Khái niệm: Embedding Dimension & Cosine Similarity\n- Mã nguồn: rag_indexing.py\n- Bạn có muốn chuyển tiếp yêu cầu ngay bây giờ?");
+      if (confirmed) {
+        alert("✅ Ticket đã được tạo thành công! Trợ giảng sẽ phản hồi bạn qua tin nhắn trong vòng 5 phút.");
+        closeRefresher();
+      }
     }
+
     function resetOptionC() {
-      document.getElementById('socratic-user-turn').classList.remove('hidden');
-      document.getElementById('socratic-ai-turn-2').classList.add('hidden');
+      document.getElementById('ab-contrast-cards').classList.remove('hidden');
+      document.getElementById('contrast-result').classList.add('hidden');
     }
   </script>
 </body>

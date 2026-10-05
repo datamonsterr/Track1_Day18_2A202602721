@@ -9,16 +9,16 @@
 ## 1. Thông tin Cá nhân và Nhóm
 - **Họ và tên:** Phạm Thành Đạt
 - **Mã học viên:** `2A202602721`
-- **Tên nhóm:** Nhóm 2A — AI Tutor Diagnostic Refresher
+- **Tên nhóm:** Nhóm 2A — Case A: Diagnostic Refresher
 - **Thành viên nhóm:** 
-  1. **Phạm Thành Đạt** (MHV: 2A202602721) — Phụ trách kiến trúc kỹ thuật testbed, thiết kế Option B (Concept Map & Self-Select), điều phối phiên thử nghiệm 1.
-  2. **Thành viên 2** — Phụ trách thiết kế Option A (Diagnostic Quiz), điều phối phiên thử nghiệm 2.
-  3. **Thành viên 3** — Phụ trách thiết kế Option C (Socratic Dialogue Probe), điều phối phiên thử nghiệm 3.
+  1. **Phạm Thành Đạt** (MHV: 2A202602721) — Phụ trách kiến trúc kỹ thuật testbed, thiết kế Option B (Knowledge Checklist User-Led), điều phối phiên thử nghiệm cá nhân #1.
+  2. **Thành viên 2** — Phụ trách thiết kế Option A (Diagnostic Refresher AI-Led), điều phối phiên thử nghiệm cá nhân #2.
+  3. **Thành viên 3** — Phụ trách thiết kế Option C (A/B Contrast & Escalation Co-create & Human), điều phối phiên thử nghiệm cá nhân #3.
 - **Case được chọn:** **Case A — AI Tutor: Diagnostic Refresher**
   - *Trigger:* Học viên bấm nút “Tôi vẫn chưa hiểu”
   - *Input:* Bài hiện tại, câu trả lời/mã nguồn gần đây và lịch sử học tập
   - *AI Action:* Chẩn đoán và lựa chọn khái niệm nền tương ứng
-  - *Output:* Một phần ôn lại ngắn (< 2 phút) trước khi đưa học viên quay lại bài hiện tại
+  - *Output:* Một phần ôn lại ngắn (< 3 phút) trước khi đưa học viên quay lại bài hiện tại
   - *User Control:* Học viên chủ động yêu cầu trợ giúp và nắm quyền kiểm soát tiến trình
 
 ---
@@ -26,91 +26,99 @@
 ## 2. Hypothesis Problem (Giả thuyết Vấn đề Day 18)
 
 ### Bản Giả thuyết Vấn đề của Nhóm:
-> **"Học viên thường xuyên bị bế tắc và có xu hướng bỏ dở bài tập nâng cao khi gặp lỗi logic phức tạp, do họ thiếu khả năng tự chẩn đoán chính xác khái niệm nền nào đang bị hổng và không có giải pháp ôn tập bổ trợ ngắn gọn, tức thì ngay tại luồng làm bài."**
+> **"Học viên non-tech và chuyển ngành thường xuyên bị nghẽn và bỏ dở bài học khi tiếp cận các bài tập kỹ thuật AI tổng hợp (như LangChain RAG Indexing), do họ thiếu khả năng tự chẩn đoán chính xác lỗ hổng kiến thức nền (prerequisites) đang gặp phải và thiếu giải pháp ôn tập bổ trợ ngắn gọn, tức thì (< 3 phút) ngay tại giao diện học tập."**
 
 ### Nối kết với Bằng chứng Thực nghiệm Day 17 (Gate 1 — Evidence Continuity):
-- **Quan sát từ phỏng vấn Anh Khánh (25 tuổi - BA):** Khi học kiến thức kỹ thuật mới, anh bị ngợp bởi khối lượng tài liệu khổng lồ, phải tự mày mò hỏi AI nhưng thông tin bị rời rạc, làm tốn nhiều thời gian và dễ gây nản lòng.
-- **Quan sát từ phỏng vấn Bạn Khuê (21 tuổi - Sinh viên CS):** Gặp khó khăn lớn nhất ở các chủ đề trừu tượng (như Cryptography/Mạng), thường phải đọc tài liệu ngoài luồng hoặc chờ mentor hỗ trợ khiến luồng thực hành bị đứt quãng.
-- **Quan sát từ phỏng vấn Bạn Thương (23 tuổi - BA) & Bạn Linh (22 tuổi - Marketing):** Cả hai đều nhấn mạnh rằng việc học lập trình/AI đòi hỏi phải chẻ nhỏ kiến thức thành từng checklist ngắn (như workaround của bạn Linh); nếu AI đưa ra lời giải thích quá chung chung hoặc không đúng trọng tâm, họ sẽ mất nhiều thời gian sửa lại thủ công.
+- **Phỏng vấn Anh Khánh (25 tuổi - BA):** Vừa làm vừa học dự án mới, giai đoạn đầu bị ngợp bởi lượng kiến thức kỹ thuật quá lớn; workaround là tự dùng AI tham khảo nhưng tài liệu bị rối và tốn thời gian xác nhận thủ công.
+- **Phỏng vấn Bạn Khuê (21 tuổi - Sinh viên CS):** Gặp khó ở các môn lý thuyết nền tảng phức tạp (Cryptography/Cloud); phải tìm tài liệu rời rạc bên ngoài làm gián đoạn luồng làm bài thực hành.
+- **Phỏng vấn Bạn Thương (23 tuổi - BA) & Bạn Linh (22 tuổi - Marketing):** Cả hai đều đối mặt với rào cản thuật toán và code. Workaround điển hình của bạn Linh là **chủ động nhờ AI Agent tạo checklist kiến thức để chẻ nhỏ vấn đề**. Khi AI đưa ra kết quả thiếu nhất quán ngữ cảnh (như Thương phản ánh), người học mất rất nhiều công sức điều chỉnh thủ công.
 
 ### Điều Nhóm Chưa Biết (The Unknown):
-- Nhóm chưa biết liệu việc chẩn đoán tại chỗ có thực sự giúp người học duy trì động lực hoàn thành cả khóa học hay chỉ giải quyết được lỗi cục bộ trước mắt.
-- Nhóm chưa biết mức độ can thiệp nào của AI (Quiz bắt buộc vs Tự chọn trên bản đồ vs Đối thoại gợi mở) sẽ tối ưu hóa tốc độ tiếp thu mà không gây áp lực tâm lý cho người học.
+- Chưa biết cơ chế nào giữa **AI tự chẩn đoán (AI-Led)**, **Người học tự soi chiếu checklist (User-Led)**, hay **Đối chiếu phản biện tư duy kết hợp Trợ giảng (Human-in-the-loop)** sẽ giúp người học non-tech thông suốt nhanh nhất mà không gây quá tải nhận thức.
+- Chưa biết việc ôn tập vi mô tức thì (< 3 phút) có thực sự chuyển hóa thành năng lực giải quyết bài tập độc lập lâu dài hay chỉ là giải pháp tình thế.
 
 ---
 
 ## 3. Three Solution Options & Prototype Links (Gate 2 & Gate 3)
 
-Cả 3 phương án đều giải quyết **cùng một bài toán và tác vụ**: Học viên đang giải bài tập *Token Bucket Rate Limiter*, gặp lỗi Race Condition ở test case kiểm thử đa luồng, bấm *"Tôi vẫn chưa hiểu"* để được chẩn đoán và ôn tập ngắn.
+### Constants (Giữ cố định cho cả 3 Options):
+- **Target User:** Học viên non-tech / chuyển ngành (Marketing, BA mới vào nghề).
+- **Situation:** Đang trong luồng học bài tập kỹ thuật tổng hợp thì bị nghẽn ở một khái niệm nền tảng.
+- **Task:** Xác định và lấp nhanh lỗ hổng kiến thức nền để tiếp tục hoàn thành bài học.
+- **Desired Outcome:** Hiểu bản chất khái niệm bị hổng trong < 3 phút, khôi phục sự tự tin và tiếp tục làm bài mà không rời khỏi giao diện.
+- **Content/Data Fixture:** **Bài 4: Xây dựng RAG Agent cơ bản với LangChain** — Tại bước cấu hình VectorStore Indexing, học viên gặp lỗi/không hiểu thuật ngữ: *"Embedding Dimension & Cosine Similarity"*.
 
-| Phương án | Mô tả Cơ chế (Mechanism) & Phân chia vai trò User — AI | Quyền kiểm soát & Đường phục hồi (Human Control & Recovery) | Liên kết Prototype |
-| :--- | :--- | :--- | :--- |
-| **Option A: Diagnostic Quiz (AI-Led)** | **Cơ chế:** AI tự động sinh 2 câu trắc nghiệm nhanh dựa trên log lỗi kiểm thử để khoanh vùng lỗ hổng; sau khi nộp, AI hiển thị thẻ ôn tập 60s tương ứng.<br>**Phân vai:** AI dẫn dắt kiểm tra; User trả lời khách quan. | - **Kỳ vọng:** Báo rõ AI sẽ hỏi 2 câu ngắn.<br>- **Độ tin cậy:** Ghi rõ căn cứ từ test log (độ tin cậy 82%).<br>- **Phục hồi:** Nút *"Bỏ qua quiz → Xem tóm tắt ngay"* và nút *"Quay lại bài làm"* bất kỳ lúc nào. | [`prototypes/index.html`](file:///home/dat/dev/vinuni_aia/Track1_Day18_2A202602721/prototypes/index.html) (chọn Tab A) |
-| **Option B: Concept Map (User-Select)** | **Cơ chế:** AI phân tích mã nguồn và dựng Bản đồ Cây Phụ Thuộc Khái Niệm kèm chỉ số nghi vấn (Đỏ: 88%, Vàng: 45%, Xanh: 15%). User tự click chọn node mình băn khoăn và chọn độ sâu ôn tập.<br>**Phân vai:** AI là radar bằng chứng; User nắm toàn quyền quyết định. | - **Kỳ vọng:** Hiển thị trực quan các mảng kiến thức liên quan.<br>- **Agency:** User tự chọn node và tự kéo thanh gạt độ sâu (TL;DR 30s vs Code chuyên sâu).<br>- **Phục hồi:** Đổi node khác với 1 click; nút *"✕ Đóng / Quay lại bài"*. | [`prototypes/index.html`](file:///home/dat/dev/vinuni_aia/Track1_Day18_2A202602721/prototypes/index.html) (chọn Tab B) |
-| **Option C: Socratic Probe (2-Turn)** | **Cơ chế:** AI đóng vai trò gia sư gợi mở tư duy, đưa ra 1 ví dụ ẩn dụ đời thường (ví tiền có 2 người cùng rút) để học viên tự nhận ra lỗi logic sau 2 lượt đối thoại ngắn.<br>**Phân vai:** AI kích hoạt tư duy phản biện; User đối thoại suy luận. | - **Kỳ vọng:** Giới hạn tối đa 2 câu hỏi định hướng.<br>- **Agency:** User chọn phản hồi có sẵn hoặc tự gõ câu trả lời.<br>- **Cứu cánh:** Nút khẩn cấp *"⚡ Giải thích thẳng luôn, đừng hỏi nữa"* để vượt qua câu hỏi ngay. | [`prototypes/index.html`](file:///home/dat/dev/vinuni_aia/Track1_Day18_2A202602721/prototypes/index.html) (chọn Tab C) |
+### Variables Across Options (Khác biệt về Cơ chế & Phân chia vai trò):
+
+| Phương án | Cơ chế cốt lõi (Mechanism) | Phân chia vai trò User — AI | Human Control & Đường Phục Hồi (Recovery) | Prototype Link |
+| :--- | :--- | :--- | :--- | :--- |
+| **Option A: Diagnostic Refresher (AI-Led)** | **Chẩn đoán trắc nghiệm tự động:** AI đưa ra 2 câu mini-quiz để xác định điểm hổng, sau đó push Refresher Card 60s về khái niệm nền tương ứng. | - **AI:** Hỏi qua quiz, chấm điểm, suy luận concept bị hổng, sinh thẻ tóm tắt (*Ask*).<br>- **User:** Trả lời 2 câu quiz, đọc Refresher Card, bấm quay lại bài. | - **Kỳ vọng:** Báo rõ quiz 60s.<br>- **Bằng chứng:** "Dựa trên bài học VectorStore & câu trả lời quiz".<br>- **Phục hồi:** Nút *"Bỏ qua chẩn đoán"* & *"Đây không phải phần tôi cần"*. | [`prototypes/index.html`](file:///home/dat/dev/vinuni_aia/Track1_Day18_2A202602721/prototypes/index.html) (Tab A) |
+| **Option B: Knowledge Checklist (User-Led)** | **Cây phân rã kiến thức tự chọn:** Giao diện hiển thị drawer checklist các mắt xích nền tảng; user tự click vào mắt xích mơ hồ để xem giải thích trực quan. | - **AI:** Phân rã cấu trúc prerequisite; thụ động chờ user click (*Don't Act*).<br>- **User:** Tự duyệt checklist, tự tick chọn điểm chưa rõ (*Self-Assessment*). | - **Kỳ vọng:** Nhãn tab ghi rõ danh mục kiến thức có sẵn.<br>- **Bằng chứng:** Dẫn link nguồn Bài 2 trong giáo trình.<br>- **Phục hồi:** Nút đóng drawer [X], bỏ tick chọn, nút mở bài giảng gốc. | [`prototypes/index.html`](file:///home/dat/dev/vinuni_aia/Track1_Day18_2A202602721/prototypes/index.html) (Tab B) |
+| **Option C: A/B Contrast & Escalation (Co-create & Human)** | **Đối chiếu phản biện tư duy & Kết nối Mentor:** AI đưa ra 2 kịch bản hiểu tương phản (A vs B); giải thích ngộ nhận; nếu vẫn tắc thì tự tạo ticket gửi Trợ giảng. | - **AI:** Sinh 2 kịch bản tương phản; giải thích ngộ nhận; tự gom context gửi Mentor khi user yêu cầu (*Ask*).<br>- **User:** Chọn phương án A/B; quyết định có cần escalate cho Mentor không. | - **Kỳ vọng:** Ghi rõ cơ chế đối chiếu & thời gian phản hồi Trợ giảng.<br>- **Bằng chứng:** "68% học viên nhầm Dimension & Token Count".<br>- **Phục hồi:** Preview ticket trước khi gửi, nút hủy gửi, thoát an toàn 100%. | [`prototypes/index.html`](file:///home/dat/dev/vinuni_aia/Track1_Day18_2A202602721/prototypes/index.html) (Tab C) |
 
 ---
 
 ## 4. Đóng Góp Của Tôi Trong Nhóm (Individual Contribution)
 1. **Kiến trúc Kỹ thuật & Testbed Tương tác Chung:**
-   - Xây dựng bộ testbed HTML/JS tích hợp đầy đủ [`prototypes/index.html`](file:///home/dat/dev/vinuni_aia/Track1_Day18_2A202602721/prototypes/index.html) phục vụ việc thử nghiệm cho cả nhóm và các tester ngoài nhóm.
-   - Kế thừa và tinh chỉnh hệ thống AI Log Hook từ Day 16, đảm bảo tự động ghi nhận minh bạch các lượt tương tác với mô hình LLM.
-2. **Thiết kế & Hoàn thiện Phương án B (Concept Dependency Map & Self-Select):**
-   - Đóng góp cơ chế phân chia vai trò: AI cung cấp chỉ số nghi vấn định lượng, User tự chọn độ sâu (TL;DR 30s vs Chi tiết kỹ thuật).
+   - Xây dựng bộ testbed tương tác [`prototypes/index.html`](file:///home/dat/dev/vinuni_aia/Track1_Day18_2A202602721/prototypes/index.html) chuẩn hóa theo fixture LangChain RAG Indexing, đảm bảo cả 3 options chạy mượt mà trên cùng một bối cảnh thực hành.
+   - Tích hợp và cấu hình hệ thống ghi log [`.ai_log`](file:///home/dat/dev/vinuni_aia/Track1_Day18_2A202602721/.ai_log) kèm test suite tự động kiểm thử 4 kịch bản.
+2. **Thiết kế & Hoàn thiện Phương án B (Knowledge Checklist User-Led):**
+   - Đóng góp giải pháp lấy cảm hứng từ workaround thực tế của bạn Linh (Day 17): chuyển hóa nhu cầu chẻ nhỏ kiến thức thành cây phân rã mắt xích tự chọn, giúp người học không bị áp lực kiểm tra.
 3. **Thực hiện Phiên Thử Nghiệm Cá Nhân (Facilitation & Observation):**
-   - Trực tiếp điều phối và ghi nhận toàn bộ phản hồi từ tester ngoài nhóm (Nguyễn Hoàng Nam, 26 tuổi, Backend Engineer).
-4. **Tham gia Đồng Tổng hợp Feedback & Phản biện AI Support Log:**
-   - Chắp bút tài liệu [`prototype-feedback-note.md`](file:///home/dat/dev/vinuni_aia/Track1_Day18_2A202602721/prototype-feedback-note.md) và đóng góp phân tích so sánh trong [`group-feedback-synthesis.md`](file:///home/dat/dev/vinuni_aia/Track1_Day18_2A202602721/group-feedback-synthesis.md).
+   - Trực tiếp điều phối phiên testing độc lập với tester ngoài nhóm (Nguyễn Hoàng Nam, 26 tuổi, Backend Engineer đang học AI) và lập biên bản [`prototype-feedback-note.md`](file:///home/dat/dev/vinuni_aia/Track1_Day18_2A202602721/prototype-feedback-note.md).
+4. **Đồng Biên soạn Tài liệu Thiết kế & Tổng hợp Phản hồi Nhóm:**
+   - Hoàn thiện Chặng 2 & Chặng 3 trong [`three-option-design-sheet.md`](file:///home/dat/dev/vinuni_aia/Track1_Day18_2A202602721/three-option-design-sheet.md) và tổng hợp kết quả trong [`group-feedback-synthesis.md`](file:///home/dat/dev/vinuni_aia/Track1_Day18_2A202602721/group-feedback-synthesis.md).
 
 ---
 
 ## 5. Prototype Feedback & Group Synthesis (Gate 4 & Gate 5)
 
 ### Observation từ Phiên Tôi Điều Phối (Tester: Nguyễn Hoàng Nam — 26 tuổi):
-- Tester ưa chuộng nhất **Option B** nhờ tính minh bạch và thanh chọn độ sâu 30s giúp sửa lỗi nhanh mà không mất ngữ cảnh bài làm.
-- Tester ban đầu ngần ngại với Option A vì sợ bị "chấm điểm", nhưng thừa nhận 2 câu hỏi hỏi trúng trọng tâm lỗi.
+- **Phản ứng với Option A:** Khựng lại ban đầu vì sợ "bị kiểm tra khi đang bực mình vì lỗi code", nhưng đánh giá 2 câu hỏi vào đúng trọng tâm rào cản.
+- **Phản ứng với Option B:** Đánh giá cao nhất vì được toàn quyền quyết định xem gì và có thể chuyển đổi nhanh giữa các mắt xích mà không mất luồng code.
+- **Phản ứng với Option C:** Thích ví dụ đối chiếu A/B vì rất trực quan; nút gửi Trợ giảng tạo cảm giác an tâm tuyệt đối khi gặp bài tập quá khó.
 - Chi tiết xem tại: [`prototype-feedback-note.md`](file:///home/dat/dev/vinuni_aia/Track1_Day18_2A202602721/prototype-feedback-note.md).
 
 ### Tổng hợp Từ Ba Phiên Thử Nghiệm (Group Synthesis):
-- **Điểm đồng thuận:** Cả 3 tester đều yêu cầu thời gian tương tác phải dưới 90 giây; tính minh bạch của bằng chứng lỗi (100 vs 127 requests) là chìa khóa tạo dựng lòng tin; các đường thoát hiểm (nút quay lại, bỏ qua quiz, giải thích thẳng) là bắt buộc.
-- **Điểm khác biệt:** Học viên có nền tảng kỹ thuật thích xem diff code và sơ đồ phụ thuộc (Option B); trong khi học viên chuyển ngành/non-tech cần ẩn dụ đời thường (Option C) để tiếp cận khái niệm.
+- **Cross-Tester Patterns:** Cả 3 tester đều yêu cầu can thiệp phải dưới 3 phút; bằng chứng minh bạch (số liệu 68% nhầm lẫn, trích xuất Bài 2) gia tăng độ tin cậy; các nút thoát hiểm là bắt buộc.
+- **Divergences:** Kỹ sư công nghệ ưu tiên Option B (tự chủ, nhanh); trong khi học viên chuyển ngành/non-tech đánh giá cao Option C (đối chiếu tư duy, có Trợ giảng bảo chứng).
 - Chi tiết xem tại: [`group-feedback-synthesis.md`](file:///home/dat/dev/vinuni_aia/Track1_Day18_2A202602721/group-feedback-synthesis.md).
 
 ### One Group Next Change (Thay đổi then chốt tiếp theo dựa trên bằng chứng):
-> **Tích hợp Cơ chế Lai (Hybrid Diagnostic Flow): Khởi đầu bằng Bản đồ Khái niệm kèm Chỉ số Nghi vấn (từ Option B), nhưng cho phép mở rộng 1 câu hỏi gợi mở dạng Socratic (từ Option C) ngay trên Node được chọn để hỗ trợ người học non-tech mà không làm chậm dân kỹ thuật.**
+> **Tích hợp Cơ chế Lai (Hybrid Flow): Khởi đầu bằng Cây Mắt Xích Kiến Thức (Option B - User-Led), nhưng khi người học bấm vào một mắt xích, giao diện cung cấp tùy chọn "Xem đối chiếu cách hiểu A vs B" (từ Option C) kèm nút gửi Trợ giảng dự phòng nếu vẫn chưa thông.**
 
 ### Still Unproven (Những điểm vẫn chưa được kiểm chứng):
-1. Chưa kiểm chứng được khả năng ghi nhớ dài hạn (Knowledge Retention) của học viên sau khi ôn tập bổ trợ ngắn.
-2. Chưa kiểm chứng được độ chính xác chẩn đoán của AI trên các dạng bài tập mở không có bộ test case rõ ràng.
+1. Chưa kiểm chứng được khả năng duy trì trí nhớ dài hạn (retention) của học viên sau các thẻ micro-lesson 60s.
+2. Chưa kiểm chứng được chi phí vận hành và thời gian phản hồi thực tế của Trợ giảng khi số lượng ticket tăng đột biến trong giờ cao điểm.
 
 ---
 
 ## 6. AI Support Log (Tóm tắt Phản ánh Cá nhân)
-- **AI đã giúp gì:** Tự động hóa hệ thống ghi log `.ai_log`, cài đặt các skill tiêu chuẩn cao (Matt Pocock `wayfinder`, `prototype`), sinh bộ mã khung HTML/JS ban đầu cho testbed.
-- **AI sai và hời hợt ở đâu:** AI ban đầu đề xuất 3 option chỉ khác về kiểu hiển thị giao diện (vi phạm Gate 2); tự đề xuất tính năng AI sửa hộ code làm mất quyền kiểm soát của người học (vi phạm Gate 3); và đưa ra kết luận tâng bốc thái quá rằng giải pháp đã "hoàn toàn được validate" (vi phạm Gate 5).
-- **Con người tự sửa gì:** Bắt buộc tái cấu trúc thành 3 cơ chế tương tác và phân chia vai trò rõ rệt; bổ sung các chốt chặn kiểm soát của người dùng (Agency, Uncertainty, Emergency Recovery); và viết lại báo cáo tổng hợp với thái độ khoa học khiêm tốn, trung thực với dữ liệu thực tế.
+- **AI đã giúp gì:** Tự động hóa bộ khung AI log, cài đặt bộ skills (Matt Pocock `wayfinder`, `prototype`, BA & UI/UX skills), sinh mã nguồn ban đầu cho testbed.
+- **AI sai và hời hợt ở đâu:** Ban đầu AI đề xuất các phương án chỉ khác biệt về layout hiển thị (vi phạm Gate 2); tự động đưa logic giải hộ bài làm mất quyền tự chủ của người học (vi phạm Gate 3); và đưa ra kết luận tâng bốc rằng giải pháp đã "validated 100%" (vi phạm Gate 5).
+- **Con người tự sửa gì:** Bắt buộc tuân thủ 3 cơ chế giải quyết khác nhau (AI-Led vs User-Led vs Human-in-the-loop); thiết lập nghiêm ngặt bảng Human Control (Ask/Don't Act, bằng chứng, recovery path); và kiểm soát tính trung thực của kết luận dựa trên dữ liệu thực tế.
 - Chi tiết xem tại: [`ai-support-log.md`](file:///home/dat/dev/vinuni_aia/Track1_Day18_2A202602721/ai-support-log.md).
 
 ---
 
-## 7. Cấu Trúc Tài Liệu Repository (Checklist Nộp Bài)
+## 7. Cấu Trúc Hồ Sơ Nộp Bài
 ```
 Track1_Day18_2A202602721/
-├── README.md                          # Bản thuyết minh đầy đủ 6 phần theo chuẩn Day 18
-├── three-option-design-sheet.md       # Bảng phân tích chi tiết 3 phương án A/B/C & Human Control
-├── prototype-link.md                  # Liên kết prototype và kịch bản thử nghiệm chuẩn
-├── prototype-feedback-note.md         # Ghi chép phiên thử nghiệm do chính Phạm Thành Đạt điều phối
-├── group-feedback-synthesis.md        # Tổng hợp từ cả 3 phiên thử nghiệm, Next Change & Still Unproven
+├── README.md                          # Thuyết minh tổng thể 6 phần theo chuẩn Day 18
+├── three-option-design-sheet.md       # Phân tích Chặng 2 (Three Options) & Chặng 3 (Human-AI Design Pass)
+├── prototype-link.md                  # Liên kết prototype & kịch bản thử nghiệm chuẩn
+├── prototype-feedback-note.md         # Ghi chép phiên thử nghiệm cá nhân do Phạm Thành Đạt facilitate
+├── group-feedback-synthesis.md        # Tổng hợp 3 phiên thử nghiệm, Next Change & Still Unproven
 ├── ai-support-log.md                  # Nhật ký hỗ trợ AI, phân tích sai sót & sự can thiệp của con người
-├── DESIGN.md                          # Hệ thống thiết kế, bảng màu, typography và nguyên tắc UX
-├── AGENTS.md                          # Chỉ dẫn workflow cho AI Agent và quy trình Stitch MCP
+├── DESIGN.md                          # Hệ thống thiết kế VLearn, bảng màu, typography và nguyên tắc UX
+├── AGENTS.md                          # Chỉ dẫn workflow Stitch MCP và quy tắc 5 Evaluation Gates
 ├── index.html                         # Bộ testbed prototype tương tác chạy trực tiếp trên trình duyệt
 ├── prototypes/
-│   └── index.html                     # Thư mục chứa prototype chuyên biệt
+│   └── index.html                     # Bản testbed chuyên biệt của nhóm
 └── .agents/
     ├── hooks.json                     # Cấu hình AI Log Hook
     ├── scripts/
     │   ├── ai_log_hook.sh
-    │   └── ai_log_hook.py             # Script ghi log tương tác AI
+    │   └── ai_log_hook.py             # Script tự động ghi log AI
     └── skills/                        # Các kỹ năng đã cài đặt (Matt Pocock, UI/UX, BA)
 ```
