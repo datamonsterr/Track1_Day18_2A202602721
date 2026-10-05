@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VLearn AI Tutor — Diagnostic Refresher Prototype Suite (Day 18)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              base: '#0b1326',
+              surface1: '#111827',
+              surface2: '#171f33',
+              surface3: '#222a3d',
+              cyan: '#0ea5e9',
+              cyanLight: '#89ceff',
+              coral: '#f43f5e',
+              emerald: '#10b981',
+              amber: '#f59e0b',
+              border: '#1e293b'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #0b1326;
+      color: #dae2fd;
+      font-family: 'Inter', sans-serif;
+    }
+    .code-font {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 3px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #334155;
+    }
+    .glow-cyan {
+      box-shadow: 0 0 15px rgba(14, 165, 233, 0.25);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col custom-scrollbar">
+
+  <!-- Top Navigation Bar / Prototype Controller -->
+  <header class="bg-brand-surface1 border-b border-brand-border px-6 py-3 flex items-center justify-between sticky top-0 z-50">
+    <div class="flex items-center space-x-4">
+      <div class="flex items-center space-x-2">
+        <div class="w-3 h-3 rounded-full bg-brand-cyan animate-pulse"></div>
+        <span class="font-bold text-white tracking-tight text-lg">VLearn <span class="text-brand-cyan text-sm font-normal">AI Studio</span></span>
+      </div>
+      <span class="text-xs px-2.5 py-1 rounded bg-slate-800 text-slate-300 border border-slate-700 code-font">Track 1 · Day 18 Lab Testbed</span>
+    </div>
+
+    <!-- Mode Selector for Testers -->
+    <div class="flex items-center bg-slate-900/90 border border-brand-border p-1 rounded-lg space-x-1">
+      <button id="tab-opt-a" onclick="switchOption('A')" class="px-3 py-1.5 rounded-md text-xs font-medium transition-all bg-brand-cyan text-slate-950 font-semibold shadow">
+        Option A: Diagnostic Quiz (AI-Led)
+      </button>
+      <button id="tab-opt-b" onclick="switchOption('B')" class="px-3 py-1.5 rounded-md text-xs font-medium text-slate-400 hover:text-white transition-all">
+        Option B: Concept Map (User-Select)
+      </button>
+      <button id="tab-opt-c" onclick="switchOption('C')" class="px-3 py-1.5 rounded-md text-xs font-medium text-slate-400 hover:text-white transition-all">
+        Option C: Socratic Dialogue (2-Turn)
+      </button>
+    </div>
+
+    <!-- Student & Session Meta -->
+    <div class="flex items-center space-x-3 text-xs text-slate-400">
+      <span class="hidden md:inline">Thí nghiệm: <strong class="text-slate-200">MHV 2A202602721</strong></span>
+      <button onclick="resetExercise()" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-600 transition">
+        Reset Lab State
+      </button>
+    </div>
+  </header>
+
+  <!-- Context & Instructions Banner for External Testers -->
+  <div class="bg-brand-surface2/60 border-b border-brand-border px-6 py-2.5 text-xs text-slate-300 flex flex-wrap items-center justify-between gap-2">
+    <div class="flex items-center space-x-2">
+      <span class="bg-brand-coral/20 text-brand-coral font-semibold px-2 py-0.5 rounded code-font">TEST TASK</span>
+      <span>Bạn đang giải lab <strong>Rate Limiter (Token Bucket)</strong> và gặp lỗi <code class="bg-slate-800 px-1 py-0.5 rounded text-amber-300">Race Condition / Overfill</code>. Hãy bấm <strong class="text-brand-cyan">"Tôi vẫn chưa hiểu"</strong> để trải nghiệm chẩn đoán & ôn tập.</span>
+    </div>
+    <div id="mechanism-badge" class="text-brand-cyanLight code-font">
+      Cơ chế hiện tại: [AI chủ động kiểm tra kiến thức qua quiz 2 câu]
+    </div>
+  </div>
+
+  <!-- Main Workstation Layout -->
+  <main class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-0 overflow-hidden">
+    
+    <!-- Left Workspace: The Coding Exercise (Constant context across A/B/C) -->
+    <section class="lg:col-span-7 border-r border-brand-border flex flex-col bg-brand-base p-6 overflow-y-auto custom-scrollbar">
+      
+      <!-- Module Header -->
+      <div class="flex items-center justify-between pb-4 border-b border-brand-border mb-4">
+        <div>
+          <span class="text-xs uppercase tracking-wider text-brand-cyan code-font font-semibold">Chương 4 · Concurrency & Distributed Systems</span>
+          <h1 class="text-xl font-bold text-white mt-0.5">Lab 4.2: Triển khai Thread-safe Token Bucket Rate Limiter</h1>
+        </div>
+        <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/30 flex items-center gap-1.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> Trạng thái: Lỗi bài nộp #3
+        </span>
+      </div>
+
+      <!-- Problem Statement -->
+      <div class="text-sm text-slate-300 space-y-3 mb-6 leading-relaxed">
+        <p>
+          <strong>Yêu cầu:</strong> Hoàn thiện class <code class="code-font text-brand-cyanLight bg-slate-900 px-1.5 py-0.5 rounded">TokenBucketLimiter</code> với dung lượng <code class="code-font text-slate-200">capacity=100</code> và tốc độ nạp <code class="code-font text-slate-200">refill_rate=10 tokens/sec</code>. Hàm <code class="code-font text-brand-cyanLight">allow_request(tokens)</code> phải đảm bảo tính toàn vẹn khi có 50 threads gọi đồng thời.
+        </p>
+      </div>
+
+      <!-- Mock Code Editor -->
+      <div class="rounded-lg border border-brand-border bg-slate-950 p-4 font-mono text-xs overflow-x-auto mb-4 relative shadow-inner">
+        <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-800 text-slate-500 text-[11px]">
+          <span>solution.py</span>
+          <span>Python 3.11</span>
+        </div>
+        <pre class="text-slate-300 leading-5"><code><span class="text-purple-400">import</span> time
+<span class="text-purple-400">import</span> threading
+
+<span class="text-blue-400">class</span> <span class="text-yellow-300">TokenBucketLimiter</span>:
+    <span class="text-blue-400">def</span> <span class="text-green-400">__init__</span>(self, capacity: <span class="text-orange-300">int</span>, refill_rate: <span class="text-orange-300">float</span>):
+        self.capacity = capacity
+        self.tokens = capacity
+        self.refill_rate = refill_rate
+        self.last_refill = time.time()
+        self.lock = threading.Lock()
+
+    <span class="text-blue-400">def</span> <span class="text-green-400">allow_request</span>(self, tokens: <span class="text-orange-300">int</span> = 1) -> <span class="text-orange-300">bool</span>:
+        now = time.time()
+        elapsed = now - self.last_refill
+        <span class="text-slate-500"># BUG POTENTIAL: Refill formula & lock scoping</span>
+        added_tokens = elapsed * self.refill_rate
+        self.tokens = min(self.capacity, self.tokens + added_tokens)
+        self.last_refill = now
+        
+        <span class="text-purple-400">with</span> self.lock:
+            <span class="text-purple-400">if</span> self.tokens >= tokens:
+                self.tokens -= tokens
+                <span class="text-purple-400">return</span> <span class="text-green-300">True</span>
+            <span class="text-purple-400">return</span> <span class="text-red-400">False</span></code></pre>
+      </div>
+
+      <!-- Test Run Output / Terminal -->
+      <div class="rounded-lg border border-red-900/50 bg-red-950/20 p-3.5 mb-6 text-xs code-font">
+        <div class="flex items-center text-red-400 font-semibold mb-1.5 gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          FAILED: TestConcurrentBursts (4/5 tests passed)
+        </div>
+        <p class="text-slate-300 text-[11px] leading-relaxed">
+          <span class="text-red-300">AssertionError:</span> Expected max 100 requests granted in 0.01s, but 127 requests succeeded! 
+          <br><span class="text-slate-400">Gợi ý lỗi:</span> Giá trị <code class="text-yellow-300">self.tokens</code> bị đọc/ghi ngoài lock trước khi acquire lock, gây hiện tượng Race Condition khi nạp token.
+        </p>
+      </div>
+
+      <!-- Action Buttons: The Trigger Button -->
+      <div class="mt-auto pt-4 border-t border-brand-border flex items-center justify-between">
+        <button class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium border border-slate-700 transition">
+          Chạy lại kiểm thử
+        </button>
+
+        <div class="flex items-center space-x-3">
+          <button id="trigger-btn" onclick="triggerHelp()" class="px-4 py-2 rounded-lg bg-brand-cyan/20 hover:bg-brand-cyan/30 text-brand-cyan border border-brand-cyan/50 text-xs font-semibold flex items-center gap-2 transition glow-cyan">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span>Tôi vẫn chưa hiểu</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Workspace: The 3 Diagnostic Refresher Options -->
+    <section class="lg:col-span-5 bg-brand-surface1 flex flex-col p-6 overflow-y-auto custom-scrollbar relative">
+      
+      <!-- Panel Header & Human Control Badges -->
+      <div class="flex items-center justify-between pb-3 border-b border-brand-border mb-4">
+        <div class="flex items-center space-x-2">
+          <span class="w-2 h-2 rounded-full bg-brand-cyan"></span>
+          <h2 class="text-sm font-semibold text-white uppercase tracking-wider code-font" id="option-title">Option A: Diagnostic Quiz</h2>
+        </div>
+        <div class="flex items-center space-x-2">
+          <button onclick="closeRefresher()" class="text-xs text-slate-400 hover:text-white px-2 py-1 rounded bg-slate-800/80 border border-slate-700 hover:bg-slate-700 transition flex items-center gap-1" title="Quay lại bài làm ngay lập tức">
+            <span>✕ Đóng / Quay lại bài</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- STATE 0: IDLE STATE (Before clicking 'Tôi vẫn chưa hiểu') -->
+      <div id="state-idle" class="flex-1 flex flex-col items-center justify-center text-center p-8 text-slate-400">
+        <div class="w-12 h-12 rounded-full bg-brand-surface2 border border-brand-border flex items-center justify-center text-brand-cyan mb-3">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </div>
+        <h3 class="text-white font-medium text-sm mb-1">AI Diagnostic Refresher đang chờ</h3>
+        <p class="text-xs leading-relaxed max-w-sm mb-4">
+          Khi gặp bế tắc hoặc chưa rõ nguyên nhân lỗi trong bài nộp, hãy bấm nút <span class="text-brand-cyan font-medium">"Tôi vẫn chưa hiểu"</span> ở thanh công cụ bài tập bên trái.
+        </p>
+        <button onclick="triggerHelp()" class="px-4 py-2 rounded-md bg-brand-cyan text-slate-950 font-semibold text-xs hover:bg-brand-cyanLight transition">
+          Thử kích hoạt ngay
+        </button>
+      </div>
+
+      <!-- ========================================== -->
+      <!-- OPTION A: AI-Led Diagnostic Quiz Container -->
+      <!-- ========================================== -->
+      <div id="option-a-container" class="hidden flex-1 flex flex-col">
+        <!-- Human Agency & Evidence Box -->
+        <div class="p-3 rounded-lg bg-brand-surface2 border border-brand-border mb-4 text-xs">
+          <div class="flex items-center justify-between text-slate-400 mb-1">
+            <span class="code-font text-[11px] text-brand-cyan font-medium">BẰNG CHỨNG HỆ THỐNG</span>
+            <span class="text-[11px] text-slate-400">Độ tin cậy AI: 82%</span>
+          </div>
+          <p class="text-slate-300 text-xs">
+            Hệ thống phát hiện lỗi xảy ra trong tình huống đa luồng. Để khoanh vùng chính xác lỗ hổng giữa <em>Nguyên lý Khóa (Mutex)</em> và <em>Công thức Token Math</em>, vui lòng chọn nhanh 2 câu trắc nghiệm:
+          </p>
+        </div>
+
+        <!-- Quiz Form -->
+        <div id="quiz-step-1" class="space-y-4 flex-1">
+          <div class="p-3.5 rounded-lg bg-slate-900 border border-brand-border">
+            <span class="text-[11px] code-font text-brand-cyan font-semibold">CÂU 1/2</span>
+            <p class="text-xs text-white font-medium mt-1 mb-3">
+              Trong đoạn code trên, phép tính <code class="text-brand-cyanLight code-font">self.tokens = min(self.capacity, self.tokens + added_tokens)</code> nằm ngoài khối <code class="text-brand-cyanLight code-font">with self.lock:</code> sẽ dẫn đến hệ quả gì?
+            </p>
+            <div class="space-y-2 text-xs">
+              <label class="flex items-start p-2 rounded bg-brand-surface2/60 hover:bg-brand-surface2 cursor-pointer border border-transparent hover:border-slate-700 transition">
+                <input type="radio" name="q1" value="A" class="mt-0.5 mr-2.5 text-brand-cyan">
+                <span>A. Tốc độ nạp token bị chậm hơn bình thường.</span>
+              </label>
+              <label class="flex items-start p-2 rounded bg-brand-surface2/60 hover:bg-brand-surface2 cursor-pointer border border-transparent hover:border-slate-700 transition">
+                <input type="radio" name="q1" value="B" class="mt-0.5 mr-2.5 text-brand-cyan">
+                <span>B. Race Condition: Hai luồng cùng đọc giá trị cũ rồi ghi đè, làm mất lượt trừ token.</span>
+              </label>
+              <label class="flex items-start p-2 rounded bg-brand-surface2/60 hover:bg-brand-surface2 cursor-pointer border border-transparent hover:border-slate-700 transition">
+                <input type="radio" name="q1" value="C" class="mt-0.5 mr-2.5 text-brand-cyan">
+                <span>C. Không ảnh hưởng vì hàm allow_request chỉ đọc một lần.</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="p-3.5 rounded-lg bg-slate-900 border border-brand-border">
+            <span class="text-[11px] code-font text-brand-cyan font-semibold">CÂU 2/2</span>
+            <p class="text-xs text-white font-medium mt-1 mb-3">
+              Mục đích chính của Mutex Lock trong bài toán Rate Limiter là gì?
+            </p>
+            <div class="space-y-2 text-xs">
+              <label class="flex items-start p-2 rounded bg-brand-surface2/60 hover:bg-brand-surface2 cursor-pointer border border-transparent hover:border-slate-700 transition">
+                <input type="radio" name="q2" value="A" class="mt-0.5 mr-2.5 text-brand-cyan">
+                <span>A. Biến toàn bộ thao tác kiểm tra và cập nhật token thành thao tác nguyên tử (atomic).</span>
+              </label>
+              <label class="flex items-start p-2 rounded bg-brand-surface2/60 hover:bg-brand-surface2 cursor-pointer border border-transparent hover:border-slate-700 transition">
+                <input type="radio" name="q2" value="B" class="mt-0.5 mr-2.5 text-brand-cyan">
+                <span>B. Tự động ngủ (sleep) khi số lượng request vượt ngưỡng.</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Recovery & Action Bar -->
+          <div class="pt-2 flex items-center justify-between">
+            <button onclick="skipQuiz()" class="text-xs text-slate-400 hover:text-slate-200 underline">
+              Bỏ qua bài kiểm tra → Xem giải thích ngay
+            </button>
+            <button onclick="submitQuiz()" class="px-4 py-2 rounded-lg bg-brand-cyan hover:bg-brand-cyanLight text-slate-950 font-semibold text-xs transition">
+              Nộp câu trả lời & Xem kết quả
+            </button>
+          </div>
+        </div>
+
+        <!-- Quiz Result & 1-Minute Micro-Refresher Card -->
+        <div id="quiz-result" class="hidden space-y-4 flex-1">
+          <div class="p-3.5 rounded-lg bg-emerald-950/30 border border-emerald-800/40 text-xs">
+            <span class="text-emerald-400 font-semibold flex items-center gap-1.5 mb-1">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+              Chẩn đoán hoàn tất: Xác định chính xác lỗ hổng!
+            </span>
+            <p class="text-slate-300 text-[12px]">
+              Bạn đã hiểu đúng khái niệm Mutex, nhưng chưa bao bọc toàn bộ chu kỳ <strong>(tính toán nạp token + trừ token)</strong> vào trong Critical Section.
+            </p>
+          </div>
+
+          <!-- Micro Refresher Card -->
+          <div class="p-4 rounded-lg bg-slate-900 border border-brand-border space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+              <span class="text-xs font-bold text-white uppercase tracking-wider">Thẻ Ôn Tập 60s: Critical Section Scoping</span>
+              <span class="text-[11px] code-font text-brand-cyan bg-brand-cyan/10 px-2 py-0.5 rounded">Khái niệm cốt lõi</span>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Mọi biến trạng thái chia sẻ (<code class="code-font text-amber-300">self.tokens</code>, <code class="code-font text-amber-300">self.last_refill</code>) cần phải được bảo vệ từ lúc bắt đầu đọc giá trị cũ cho đến khi hoàn tất ghi giá trị mới.
+            </p>
+            <div class="p-2.5 rounded bg-slate-950 border border-slate-800 font-mono text-[11px] text-slate-300">
+              <span class="text-slate-500"># Khắc phục đúng:</span><br>
+              <span class="text-purple-400">with</span> self.lock:<br>
+              &nbsp;&nbsp;elapsed = now - self.last_refill<br>
+              &nbsp;&nbsp;self.tokens = min(self.capacity, self.tokens + elapsed * self.refill_rate)<br>
+              &nbsp;&nbsp;self.last_refill = now<br>
+              &nbsp;&nbsp;<span class="text-purple-400">if</span> self.tokens >= tokens: ...
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between pt-2">
+            <button onclick="resetOptionA()" class="text-xs text-slate-400 hover:text-slate-200">
+              ← Kiểm tra lại câu hỏi khác
+            </button>
+            <button onclick="closeRefresher()" class="px-4 py-2 rounded-lg bg-brand-emerald hover:bg-emerald-400 text-slate-950 font-semibold text-xs transition">
+              Đã hiểu! Quay lại sửa bài tập →
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======================================================= -->
+      <!-- OPTION B: Interactive Concept Map & Self-Select Container -->
+      <!-- ======================================================= -->
+      <div id="option-b-container" class="hidden flex-1 flex flex-col">
+        <!-- Evidence & Transparency Box -->
+        <div class="p-3 rounded-lg bg-brand-surface2 border border-brand-border mb-3 text-xs">
+          <div class="flex items-center justify-between text-slate-400 mb-1">
+            <span class="code-font text-[11px] text-brand-cyan font-medium">BẢN ĐỒ KHÁI NIỆM NỀN (CONCEPT RADAR)</span>
+            <span class="text-[11px] text-slate-400">User chủ động chọn nhánh</span>
+          </div>
+          <p class="text-slate-300 text-xs">
+            Hệ thống phân tích lịch sử làm bài và gợi ý 3 mảng kiến thức liên quan. Hãy chọn chủ đề bạn cảm thấy bối rối nhất để mở thẻ ôn tập theo mức độ tùy chỉnh:
+          </p>
+        </div>
+
+        <!-- Interactive Concept Nodes -->
+        <div class="grid grid-cols-1 gap-2.5 mb-4">
+          
+          <!-- Node 1: Critical Section & Mutex (High Suspicion) -->
+          <div onclick="selectConceptNode(1)" id="concept-node-1" class="p-3 rounded-lg bg-slate-900 border-2 border-red-500/60 hover:border-red-400 cursor-pointer transition flex items-center justify-between">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-red-400"></span>
+                <span class="text-xs font-bold text-white">1. Critical Section & Mutex Scope</span>
+                <span class="text-[10px] code-font px-1.5 py-0.2 rounded bg-red-950 text-red-300 border border-red-800">Nghi vấn cao (88%)</span>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-1">Lỗi xảy ra do biến chia sẻ được đọc trước khi acquire lock.</p>
+            </div>
+            <span class="text-xs text-brand-cyan underline">Xem ôn tập →</span>
+          </div>
+
+          <!-- Node 2: Token Bucket Math & Pacing -->
+          <div onclick="selectConceptNode(2)" id="concept-node-2" class="p-3 rounded-lg bg-slate-900 border border-slate-800 hover:border-amber-500/50 cursor-pointer transition flex items-center justify-between">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                <span class="text-xs font-bold text-white">2. Token Refill Math (Elapsed Time)</span>
+                <span class="text-[10px] code-font px-1.5 py-0.2 rounded bg-amber-950 text-amber-300 border border-amber-800">Cần củng cố (45%)</span>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-1">Cách tính lượng token hồi phục theo thời gian trôi qua.</p>
+            </div>
+            <span class="text-xs text-slate-500 hover:text-slate-300">Xem ôn tập →</span>
+          </div>
+
+          <!-- Node 3: Atomic Operations in Python GIL -->
+          <div onclick="selectConceptNode(3)" id="concept-node-3" class="p-3 rounded-lg bg-slate-900 border border-slate-800 hover:border-slate-700 cursor-pointer transition flex items-center justify-between">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                <span class="text-xs font-bold text-white">3. Python Threading & GIL Boundaries</span>
+                <span class="text-[10px] code-font px-1.5 py-0.2 rounded bg-emerald-950 text-emerald-300 border border-emerald-800">Đã vững (15%)</span>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-1">Bản chất GIL và lý do vẫn cần Lock cho bytecode phức tạp.</p>
+            </div>
+            <span class="text-xs text-slate-500 hover:text-slate-300">Xem ôn tập →</span>
+          </div>
+        </div>
+
+        <!-- Interactive Depth Slider & Customized Refresher Pane -->
+        <div id="node-detail-pane" class="p-4 rounded-lg bg-brand-surface2 border border-brand-border space-y-3 flex-1 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold text-brand-cyan" id="selected-node-title">Đang xem: Critical Section & Mutex Scope</span>
+              <!-- Depth Slider for Human Control -->
+              <div class="flex items-center space-x-2 text-[11px] text-slate-400">
+                <span>Độ sâu:</span>
+                <select id="depth-select" onchange="changeDepth()" class="bg-slate-900 text-xs text-slate-200 border border-slate-700 rounded px-2 py-0.5 code-font">
+                  <option value="quick">TL;DR 30s (Trực quan)</option>
+                  <option value="deep" selected>Chi tiết kỹ thuật (Code so sánh)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Content Area dynamically changed -->
+            <div id="node-content" class="text-xs text-slate-300 space-y-2 leading-relaxed">
+              <p>
+                <strong>Nguyên lý:</strong> Nếu một thread tính toán <code class="text-amber-300">self.tokens = self.tokens + added</code> mà không giữ khóa, thread khác có thể xen vào giữa bước đọc và ghi, dẫn đến kết quả ghi đè sai lệch (Lost Update).
+              </p>
+              <div class="p-2.5 rounded bg-slate-950 border border-slate-800 font-mono text-[11px] text-slate-300">
+                <span class="text-red-400">❌ Lỗi:</span> with lock chỉ bọc trừ token.<br>
+                <span class="text-emerald-400">✔ Sửa:</span> with lock phải bọc toàn bộ từ tính elapsed đến trừ token.
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Recovery -->
+          <div class="pt-3 border-t border-slate-800 flex items-center justify-between">
+            <span class="text-[11px] text-slate-400">Bạn có thể chọn node khác phía trên bất kỳ lúc nào.</span>
+            <button onclick="closeRefresher()" class="px-4 py-2 rounded-lg bg-brand-cyan hover:bg-brand-cyanLight text-slate-950 font-semibold text-xs transition">
+              Quay lại bài làm →
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======================================================= -->
+      <!-- OPTION C: Conversational Socratic Probe Container -->
+      <!-- ======================================================= -->
+      <div id="option-c-container" class="hidden flex-1 flex flex-col">
+        <!-- Evidence & Safety Box -->
+        <div class="p-3 rounded-lg bg-brand-surface2 border border-brand-border mb-3 text-xs">
+          <div class="flex items-center justify-between text-slate-400 mb-1">
+            <span class="code-font text-[11px] text-brand-cyan font-medium">GIA SƯ GỢI MỞ SOCRATIC (2-TURN)</span>
+            <span class="text-[11px] text-slate-400">Tối đa 2 câu hỏi định hướng</span>
+          </div>
+          <p class="text-slate-300 text-xs">
+            Thay vì đưa ngay đáp án, AI sẽ đặt 1 câu hỏi gợi mở để giúp bạn tự nhận thức nguyên nhân lỗi, kèm nút thoát khẩn cấp nếu bạn muốn xem đáp án trực tiếp.
+          </p>
+        </div>
+
+        <!-- Dialogue Stream -->
+        <div class="flex-1 space-y-3 overflow-y-auto mb-3 pr-1 custom-scrollbar text-xs">
+          <!-- AI Turn 1 -->
+          <div class="flex items-start space-x-2">
+            <div class="w-6 h-6 rounded-full bg-brand-cyan flex-shrink-0 flex items-center justify-center text-[10px] text-slate-950 font-bold">AI</div>
+            <div class="p-3 rounded-lg rounded-tl-none bg-slate-900 border border-brand-border text-slate-200 leading-relaxed max-w-[90%]">
+              Chào bạn! Tôi quan sát thấy test case <strong>100 request đồng thời</strong> bị vượt trần thành 127 request. 
+              <br><br>
+              <strong>Câu hỏi gợi mở:</strong> Hãy tưởng tượng có 2 người cùng nhìn vào một ví tiền có 100k cùng 1 lúc. Cả 2 đều thấy đủ tiền và cùng quyết định rút 50k. Chuyện gì xảy ra nếu họ không thông báo cho nhau trước khi rút?
+            </div>
+          </div>
+
+          <!-- User Turn 1 (Pre-selected quick chips or custom response) -->
+          <div id="socratic-user-turn" class="space-y-2 pt-2">
+            <span class="text-[11px] text-slate-400 code-font">Chọn câu trả lời của bạn hoặc gõ nhanh:</span>
+            <div class="space-y-1.5">
+              <button onclick="respondSocratic('A')" class="w-full text-left p-2 rounded bg-brand-surface2/70 hover:bg-brand-surface2 border border-slate-700/60 text-slate-200 text-xs transition">
+                👉 "Cả hai đều rút được, khiến ví bị âm tiền (hoặc tiêu vượt số tiền đang có)!"
+              </button>
+              <button onclick="respondSocratic('B')" class="w-full text-left p-2 rounded bg-brand-surface2/70 hover:bg-brand-surface2 border border-slate-700/60 text-slate-200 text-xs transition">
+                👉 "Một trong hai người sẽ tự động nhường người kia."
+              </button>
+            </div>
+          </div>
+
+          <!-- AI Response Turn 2 (Hidden until response) -->
+          <div id="socratic-ai-turn-2" class="hidden flex items-start space-x-2">
+            <div class="w-6 h-6 rounded-full bg-brand-cyan flex-shrink-0 flex items-center justify-center text-[10px] text-slate-950 font-bold">AI</div>
+            <div class="p-3 rounded-lg rounded-tl-none bg-emerald-950/40 border border-emerald-800/40 text-slate-200 leading-relaxed max-w-[90%]">
+              <strong class="text-emerald-400">Chính xác!</strong> Đó chính là hiện tượng <strong>Race Condition</strong> trong code của bạn! 
+              <br><br>
+              Cả hai thread đều thấy <code class="text-amber-300">self.tokens</code> đủ điều kiện vì bạn tính toán số token trước khi vào cửa khóa <code class="text-brand-cyanLight">with self.lock</code>. 
+              <br><br>
+              <strong>Hành động khắc phục:</strong> Di chuyển toàn bộ đoạn tính toán nạp token vào bên trong khối <code class="text-brand-cyanLight">with self.lock:</code>.
+            </div>
+          </div>
+        </div>
+
+        <!-- Emergency Recovery: "Giải thích thẳng luôn" -->
+        <div class="pt-3 border-t border-brand-border flex items-center justify-between">
+          <button onclick="forceDirectAnswer()" class="text-xs text-brand-coral hover:text-rose-300 underline">
+            ⚡ Giải thích thẳng luôn, đừng hỏi nữa
+          </button>
+          <button onclick="closeRefresher()" class="px-4 py-2 rounded-lg bg-brand-cyan hover:bg-brand-cyanLight text-slate-950 font-semibold text-xs transition">
+            Quay lại bài làm →
+          </button>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <script>
+    let currentOption = 'A';
+    let isHelpActive = false;
+
+    function switchOption(opt) {
+      currentOption = opt;
+      
+      // Update UI Tabs
+      ['A', 'B', 'C'].forEach(o => {
+        const btn = document.getElementById(`tab-opt-${o.toLowerCase()}`);
+        if (o === opt) {
+          btn.className = "px-3 py-1.5 rounded-md text-xs font-medium transition-all bg-brand-cyan text-slate-950 font-semibold shadow";
+        } else {
+          btn.className = "px-3 py-1.5 rounded-md text-xs font-medium text-slate-400 hover:text-white transition-all";
+        }
+      });
+
+      // Update Mechanism Badge
+      const badge = document.getElementById('mechanism-badge');
+      const title = document.getElementById('option-title');
+      if (opt === 'A') {
+        badge.innerText = "Cơ chế hiện tại: [Option A · AI chủ động kiểm tra kiến thức qua quiz 2 câu]";
+        title.innerText = "Option A: Diagnostic Quiz (AI-Led)";
+      } else if (opt === 'B') {
+        badge.innerText = "Cơ chế hiện tại: [Option B · Bản đồ phụ thuộc khái niệm & User tự chọn]";
+        title.innerText = "Option B: Concept Map (User-Select)";
+      } else {
+        badge.innerText = "Cơ chế hiện tại: [Option C · Đối thoại gợi mở Socratic 2-lượt]";
+        title.innerText = "Option C: Socratic Dialogue (2-Turn)";
+      }
+
+      if (isHelpActive) {
+        showActiveOptionContainer();
+      }
+    }
+
+    function triggerHelp() {
+      isHelpActive = true;
+      document.getElementById('state-idle').classList.add('hidden');
+      showActiveOptionContainer();
+    }
+
+    function showActiveOptionContainer() {
+      document.getElementById('option-a-container').classList.add('hidden');
+      document.getElementById('option-b-container').classList.add('hidden');
+      document.getElementById('option-c-container').classList.add('hidden');
+
+      if (currentOption === 'A') {
+        document.getElementById('option-a-container').classList.remove('hidden');
+      } else if (currentOption === 'B') {
+        document.getElementById('option-b-container').classList.remove('hidden');
+      } else if (currentOption === 'C') {
+        document.getElementById('option-c-container').classList.remove('hidden');
+      }
+    }
+
+    function closeRefresher() {
+      isHelpActive = false;
+      document.getElementById('state-idle').classList.remove('hidden');
+      document.getElementById('option-a-container').classList.add('hidden');
+      document.getElementById('option-b-container').classList.add('hidden');
+      document.getElementById('option-c-container').classList.add('hidden');
+    }
+
+    function resetExercise() {
+      closeRefresher();
+      resetOptionA();
+      resetOptionB();
+      resetOptionC();
+      alert("Đã thiết lập lại trạng thái ban đầu của bài tập!");
+    }
+
+    // Option A logic
+    function submitQuiz() {
+      document.getElementById('quiz-step-1').classList.add('hidden');
+      document.getElementById('quiz-result').classList.remove('hidden');
+    }
+    function skipQuiz() {
+      submitQuiz();
+    }
+    function resetOptionA() {
+      document.getElementById('quiz-step-1').classList.remove('hidden');
+      document.getElementById('quiz-result').classList.add('hidden');
+    }
+
+    // Option B logic
+    function selectConceptNode(id) {
+      const nodes = [1, 2, 3];
+      nodes.forEach(n => {
+        const el = document.getElementById(`concept-node-${n}`);
+        if (n === id) {
+          el.classList.add('border-brand-cyan');
+          el.classList.remove('border-slate-800');
+        } else {
+          el.classList.remove('border-brand-cyan');
+        }
+      });
+
+      const title = document.getElementById('selected-node-title');
+      const content = document.getElementById('node-content');
+      if (id === 1) {
+        title.innerText = "Đang xem: Critical Section & Mutex Scope";
+        content.innerHTML = `
+          <p><strong>Nguyên lý:</strong> Nếu một thread tính toán <code class="text-amber-300">self.tokens = self.tokens + added</code> mà không giữ khóa, thread khác có thể xen vào giữa bước đọc và ghi, dẫn đến kết quả ghi đè sai lệch (Lost Update).</p>
+          <div class="p-2.5 rounded bg-slate-950 border border-slate-800 font-mono text-[11px] text-slate-300">
+            <span class="text-red-400">❌ Lỗi:</span> with lock chỉ bọc trừ token.<br>
+            <span class="text-emerald-400">✔ Sửa:</span> with lock phải bọc toàn bộ từ tính elapsed đến trừ token.
+          </div>
+        `;
+      } else if (id === 2) {
+        title.innerText = "Đang xem: Token Refill Math (Elapsed Time)";
+        content.innerHTML = `
+          <p><strong>Nguyên lý:</strong> Công thức nạp token là <code class="text-brand-cyanLight">(thời gian hiện tại - lần nạp cuối) * refill_rate</code>. Cần dùng phép gán <code class="text-amber-300">min(capacity, tokens + added)</code> để không vượt ngưỡng tối đa.</p>
+        `;
+      } else {
+        title.innerText = "Đang xem: Python Threading & GIL Boundaries";
+        content.innerHTML = `
+          <p><strong>Nguyên lý:</strong> GIL chỉ đảm bảo an toàn cho các thao tác CPython nguyên tử (atomic bytecode). Việc đọc biến, tính toán số học rồi ghi đè là chuỗi nhiều bytecode, do đó <strong>bắt buộc phải có threading.Lock</strong>.</p>
+        `;
+      }
+    }
+
+    function changeDepth() {
+      const val = document.getElementById('depth-select').value;
+      if (val === 'quick') {
+        document.getElementById('node-content').innerHTML = `
+          <p class="text-brand-cyanLight font-medium">⚡ Tóm tắt 30s:</p>
+          <p>Lỗi thừa 27 requests xảy ra do bạn để đoạn tính nạp token nằm ngoài khối khóa. <strong>Chỉ cần thụt lề dòng tính nạp token vào trong <code class="text-amber-300">with self.lock:</code> là xong!</strong></p>
+        `;
+      } else {
+        selectConceptNode(1);
+      }
+    }
+    function resetOptionB() {
+      selectConceptNode(1);
+      document.getElementById('depth-select').value = 'deep';
+    }
+
+    // Option C logic
+    function respondSocratic(ans) {
+      document.getElementById('socratic-user-turn').classList.add('hidden');
+      document.getElementById('socratic-ai-turn-2').classList.remove('hidden');
+    }
+    function forceDirectAnswer() {
+      document.getElementById('socratic-user-turn').classList.add('hidden');
+      const ai2 = document.getElementById('socratic-ai-turn-2');
+      ai2.classList.remove('hidden');
+      ai2.querySelector('div:last-child').innerHTML = `
+        <strong class="text-brand-cyanLight">Giải thích trực tiếp theo yêu cầu:</strong>
+        <p class="mt-1">Dòng 18-20 đang đọc và ghi biến <code class="text-amber-300">self.tokens</code> ngoài lock. Khi 50 luồng chạy cùng lúc, chúng đọc đè giá trị cũ. Hãy đưa toàn bộ code từ dòng 17 đến 26 vào trong khối <code class="text-brand-cyanLight">with self.lock:</code>.</p>
+      `;
+    }
+    function resetOptionC() {
+      document.getElementById('socratic-user-turn').classList.remove('hidden');
+      document.getElementById('socratic-ai-turn-2').classList.add('hidden');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "ai-log-tracker": {
+    "PreInvocation": [
+      {
+        "type": "command",
+        "command": "bash ./scripts/ai_log_hook.sh",
+        "timeout": 15
+      }
+    ]
+  }
+}
