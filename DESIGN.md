@@ -1,55 +1,60 @@
-# VLearn Diagnostic Refresher — Design System & Guidelines (DESIGN.md)
+# VLearn Course Player & AI Tutor — Design System (DESIGN.md)
 
-## 1. Brand & Design Paradigm
-- **Product:** VLearn AI Tutor — Diagnostic Refresher (Case A)
-- **Aesthetic:** Technical Precision Minimalism with subtle luminous glassmorphism.
-- **Tone:** Analytical, transparent, empowering, calm, and distraction-free.
-- **Core Philosophy:** High-efficiency learning workbench. Human maintains ultimate agency; AI acts as an evidence-based diagnostic partner, not an opaque black box.
-
----
-
-## 2. Color System & Semantic Tokens
-
-### Backgrounds & Surfaces
-- **Canvas / Viewport Base:** `#0b1326` (Deep slate navy)
-- **Surface Elevation 1 (Sidebar / Navigation):** `#111827` (Charcoal slate)
-- **Surface Elevation 2 (Workstation Cards / Panes):** `#171f33` (Slate container)
-- **Surface Elevation 3 (Floating Modals / Popovers):** `#222a3d` (Elevated card)
-- **Surface Container Highest:** `#2d3449`
-
-### Accents & Telemetry
-- **Primary Cyan (AI Telemetry & Focus):** `#0ea5e9` (Hover: `#38bdf8`, Soft text: `#89ceff`)
-- **VinUni Coral / Milestone Accent:** `#f43f5e` (Hover: `#fb7185`)
-- **Success / Validated Green:** `#10b981` (Border/glow: `rgba(16, 185, 129, 0.3)`)
-- **Warning / Diagnostic Gap Amber:** `#f59e0b` (Gap highlighted)
-- **Neutral Text Primary:** `#dae2fd`
-- **Neutral Text Secondary / Subdued:** `#bec8d2` / `#88929b`
-- **Borders & Dividers:** `1px solid #1e293b` (Active glow: `1px solid #0ea5e9`)
+## 1. Brand & Design Paradigm (Stitch Light Theme)
+- **Design Archetype:** Clean Educational Studio (derived directly from Stitch Screen `c9e5e0cd58694dd59ac4dd529f6de0b9`).
+- **Theme:** Crisp Light Mode with warm neutral undertones and high readability.
+- **Tone:** Friendly, direct, calm, distraction-free.
+- **Core Principle:** Simple UI, friendly UX. No redundant text or bureaucratic tags. Human maintains full agency at all times.
 
 ---
 
-## 3. Typography
-- **Headings & UI Chrome:** `Inter`, `sans-serif` (letter-spacing: `-0.02em`)
-  - Headline Lg: 24px - 32px / Semi-bold (600)
-  - Headline Md: 18px - 20px / Semi-bold (600)
-  - Body Lg: 16px / Regular (400) / line-height 26px
-  - Body Md: 14px / Regular (400) / line-height 22px
-- **Code & Diagnostics Data:** `JetBrains Mono`, `monospace`
-  - Inline Code: 13px / 500 weight
-  - Micro-telemetry Caps: 11px / 600 weight / tracking +0.06em
+## 2. Core Rule: No Redundant Text
+1. **Zero Boilerplate:** Eliminate meta tags like `"Track 1 - Day 18"`, `"Gate 1-5"`, `"Case A"`, or internal project tags in user-facing UI.
+2. **Direct, Conversational Copy:** Buttons and labels must use active, everyday verbs (e.g., `"Tôi chưa hiểu"`, `"Xem giải thích"`, `"Quay lại bài"`).
+3. **Information Density:** Avoid walls of explanatory text. If an element can be understood visually, omit superfluous explanatory subtitles.
+4. **Single-Purpose Routing:** No persistent multi-tab switchers in the navigation bar. The screen renders directly based on the active path (`/option-a`, `/option-b`, `/option-c`).
 
 ---
 
-## 4. Human-AI Interaction & Control Guidelines (5 Evaluation Gates)
-1. **Evidence Continuity:** Every AI diagnostic claim must cite observable evidence (e.g. "Dựa trên lần nộp bài #3 và lỗi IndexError ở dòng 14"). Never display unsubstantiated guesswork.
-2. **Expectation & Agency:** The user must know what the AI is going to do before it acts. The user can reject, refine, or skip the AI diagnostic anytime.
-3. **Transparent Uncertainty:** AI diagnostics must show confidence levels or evidence indicators (e.g. "Độ tin cậy: 85%").
-4. **Instant Recovery:** The user can escape back to their main exercise with a single click (`ESC` or "Quay lại bài tập") without losing any code or state.
-5. **No Blind Roadblocks:** If the diagnostic path chosen by AI does not match the learner's actual mental hurdle, provide an immediate one-click pivot ("Không phải phần này, tôi muốn ôn tập chủ đề khác").
+## 3. Color System & Semantic Tokens (Light Mode)
+
+### Canvas & Surfaces
+- **Canvas Base:** `#f3f4f6` (Tailwind `neutral-100`)
+- **Card / Panel Surface:** `#ffffff` (White)
+- **Subtle Surface / Hover:** `#f9fafb` (Tailwind `neutral-50`)
+- **Divider & Border:** `#e5e7eb` (Tailwind `neutral-200`)
+- **Focus / Subtle Border:** `#d1d5db` (Tailwind `neutral-300`)
+
+### Brand & Interactive Accents
+- **Brand Red (Stitch Primary):** `#c92a2a` (Hover: `#b02525`, Soft tint: `#fef2f2`)
+- **Primary Blue (Interactive Action):** `#2563eb` (Hover: `#1d4ed8`, Soft tint: `#eff6ff`)
+- **Sky Blue (AI Indicators):** `#0284c7` (Hover: `#0369a1`, Soft tint: `#f0f9ff`)
+- **Success Green:** `#16a34a` (Soft tint: `#f0fdf4`)
+- **Warning Amber:** `#d97706` (Soft tint: `#fffbeb`)
+
+### Typography Colors
+- **Text Primary (Headings, Body):** `#111827` (Tailwind `neutral-900`)
+- **Text Secondary (Subtitles, Descriptions):** `#4b5563` (Tailwind `neutral-600`)
+- **Text Muted (Placeholders, Captions):** `#9ca3af` (Tailwind `neutral-400`)
+
+### Slide Canvas (Stitch Canvas Artwork)
+- **Slide Background Gradient:** `radial-gradient(circle at 50% 30%, #f6f3eb 0%, #ebe5d8 100%)`
+- **Slide Grid Lines:** `linear-gradient(to right, rgba(0, 0, 0, 0.04) 1px, transparent 1px)`
 
 ---
 
-## 5. Prototype Implementation Rules
-- Interactive prototype must be accessible directly via standard modern browsers (HTML5, Tailwind/modern CSS, Vanilla JS without complex bundler build friction).
-- Use MCP Stitch to generate visual screens, inspect and review against this DESIGN.md, refine until visual and functional fidelity match, and pull into the local prototype application suite.
-- Both desktop and responsive views must work smoothly.
+## 4. Typography
+- **UI Chrome & Headings:** `Inter`, `-apple-system`, `sans-serif`
+  - Headline: 16px - 18px / Semi-bold (600)
+  - Body: 14px / Regular (400) / line-height 1.5
+  - Small / Caption: 12px / Medium (500)
+- **Code & Console Data:** `JetBrains Mono`, `monospace`
+  - Code Snippets: 12px - 13px / line-height 1.6
+
+---
+
+## 5. Component Patterns
+- **Top Navigation:** 56px height, white background, bottom border `#e5e7eb`, back arrow, lesson title, progress pill, language toggle, and avatar. No redundant options tab bar.
+- **Left Syllabus:** White sidebar with collapsible sections, active lesson highlighted in soft red `#fef2f2` with left indicator border `#c92a2a`.
+- **Right Utility Panel:** Tabs for Transcript, Notes, Resources with clean understated active states.
+- **Interactive Modals & Drawers:** Clean white cards with subtle shadow (`shadow-xl`), clear close `[X]` buttons, and obvious return/cancel actions.
